@@ -137,7 +137,8 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
     $scope.moveCenter = function(newPos) {
          $scope.filters.center = {
             lat: newPos.coords.latitude,
-            lng: newPos.coords.longitude
+            lng: newPos.coords.longitude,
+            zoom: 5
           
         };
     }
