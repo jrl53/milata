@@ -135,12 +135,17 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
   	geoLocationService.registerObserverCallback(updateLocation);
 
     $scope.moveCenter = function(newPos) {
+         $scope.filters.center.lat = newPos.coords.latitude;
+         $scope.filters.center.lng = newPos.coords.longitude;
+
+         /*
          $scope.filters.center = {
             lat: newPos.coords.latitude,
             lng: newPos.coords.longitude,
             zoom: 5
           
         };
+        */
     }
 
 	$scope.recording = function (on) {
