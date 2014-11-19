@@ -27,6 +27,8 @@ MapApp.factory('geoLocationService', function () {
 	var lt = 0;
 	var ls = false;
 
+	var fb = new Firebase("https://boiling-inferno-6943.firebaseio.com");
+
 	var observerCallbacks = [];
 	
 	service.latLngs = [];
@@ -81,6 +83,23 @@ MapApp.factory('geoLocationService', function () {
 		alert(watchId);
 	}
 
+	service.sendtoFBase = function(message){
+		
+        message.geometry = service.latLngs;
+		
+		fb.push(message,				
+			function(error){
+					if (error) {
+						alert("Error" + error);
+					} else {
+						alert("Data submitted successfully");
+					}
+			}
+		);
+	
+	}
+
+
 	return service;
 });
 
@@ -114,11 +133,6 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 	function($scope, $ionicModal, leafletData, geoLocationService) {
 	
 	
-	$scope.lt = 0;
-	$scope.ls = false;
-	$scope.track = false;
-	$scope.watchID;
-	
 	$scope.filters = {};
     $scope.filters.center = {
         lat: 9.933253,
@@ -133,6 +147,14 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
                 latlngs: [],
             }
         };
+
+    $scope.message = {
+    	routeName : '',
+    	company : '',
+    	name : '',
+    	email : '',
+
+    };
 
     var updateLine = function(){
     	console.log("updating line");
@@ -166,6 +188,10 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 	      geoLocationService.stop();
 	    }
 	  };
+
+	$scope.sendtoFBase = function(){
+		geoLocationService.sendtoFBase($scope.message);
+	};
 	
 	// Load the modal from the given template URL
     $ionicModal.fromTemplateUrl('templates/modal.html', function($ionicModal) {
