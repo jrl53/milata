@@ -3,25 +3,34 @@
           <h1 class="title">I'm A Modal</h1>
           <div class="button button-clear" ng-click="modal.hide()"><span class="icon ion-close"></span></div>
         </header>
-        <ion-content class="has-header" >
+        <ion-content class="has-header"  >
      
           <div class="list">
 			  <label class="item item-input item-stacked-label">
 			    <span class="input-label">Nombre de Ruta</span>
-			    <input type="text" placeholder="Moravia - San Jose">
+			    <input ng-model="message.routeName" type="text" placeholder="Moravia - San Jose">
 			  </label>
 			  <label class="item item-input item-stacked-label">
 			    <span class="input-label">Nombre de Compañía</span>
-			    <input type="text" placeholder="MiBus S.A.">
+			    <input ng-model="message.company" type="text" placeholder="MiBus S.A.">
 			  </label>
 			  <label class="item item-input item-stacked-label">
 			    <span class="input-label">Su Nombre</span>
-			    <input type="text" placeholder="Agapito Rosales">
+			    <input ng-model="message.name" type="text" placeholder="Agapito Rosales">
 			  </label>
 			  <label class="item item-input item-stacked-label">
 			    <span class="input-label">E-mail</span>
-			    <input type="text" placeholder="agapito.rosales@gmail.com">
+			    <input ng-model="message.email" type="text" placeholder="agapito.rosales@gmail.com">
 			  </label>
+			 
 		   </div>
+		   	
+		   	<div class="padding container">
+                            <div class="row">
+                                <button ng-click="reset()"  class="button button-stable button-small col col-40"              > Cancelar </button>
+                                <button ng-click="submit()" class="button button-stable  button-small col col-40 col-offset-10"> Enviar </button>
+                            </div>
+                        </div>
+        
         </ion-content>
       </div>
