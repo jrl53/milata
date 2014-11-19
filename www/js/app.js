@@ -139,6 +139,10 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
         lng:  -84.077001,
         zoom: 12
     };
+
+    $scope.tiles = {
+            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          };
     
     $scope.paths = {
             p1: {
