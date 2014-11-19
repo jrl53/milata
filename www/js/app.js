@@ -7,7 +7,7 @@ var MapApp = angular.module('MapApp', [
  */
 MapApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
 	$stateProvider
-		.state('menu', {url: "/map", abstract: true, templateUrl: "menu.html"})
+		.state('menu', {url: "/map", abstract: true, templateUrl: "templates/menu.html"})
 		.state('menu.home', {url: '/home', views:	 {'menuContent': {templateUrl: 'gpsView.html', controller: 'GpsCtrl'} }  })
 		.state('menu.help', {url: '/help', views: {'menuContent': {templateUrl: 'helpView.html', controller: 'HelpCtrl'} }  });
 
@@ -23,7 +23,7 @@ MapApp.factory('geoLocationService', function () {
 //	'use strict';
 	var service = {};
 	var watchId;
-	var pathDisplay = new Array();
+	var latLngs = new Array();
 	var lt = 0;
 	var ls = false;
 
@@ -31,6 +31,7 @@ MapApp.factory('geoLocationService', function () {
 
 	service.currentPosition = {};
 	
+	//Notification system*********************************
 	service.registerObserverCallback = function(callback){
 		observerCallbacks.push(callback);
 	}
@@ -42,10 +43,11 @@ MapApp.factory('geoLocationService', function () {
 	    });
   	};
 
+	//*******************************************************
+	
 	var onChangeError = function (error) {
   		alert("Error: " + error);
 	};	
-
 	
 	var onChange = function(newPosition) {
 
@@ -53,6 +55,8 @@ MapApp.factory('geoLocationService', function () {
 		if (ls != 1 || now - lt > 1000) {
 			//alert("in service");
 			service.currentPosition = newPosition;
+			var toPush = {lat:newPosition.coords.latitude, lng:newPosition.coords.longitude};
+			latLngs.push(toPush);
 			notifyObservers();
 			lt = now;
 			ls = 1;
@@ -123,6 +127,23 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
         zoom: 5
     };
     
+    $scope.paths = {
+            p1: {
+                color: '#008000',
+                weight: 8,
+                latlngs: [
+                    { lat: 51.50, lng: -0.082 },
+                    { lat: 48.83, lng: 2.37 },
+                    { lat: 41.91, lng: 12.48 }
+                ],
+            }
+        };
+
+    $scope.updateLine = function(){
+    	
+    	$scope.paths.p1.latlngs = geoLocationService.latLngs;
+    };
+
 
     var updateLocation = function(){
     	console.log("updating");
@@ -139,14 +160,7 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
          $scope.filters.center.lat = newPos.coords.latitude;
          $scope.filters.center.lng = newPos.coords.longitude;
 
-         /*
-         $scope.filters.center = {
-            lat: newPos.coords.latitude,
-            lng: newPos.coords.longitude,
-            zoom: 5
-          
-        };
-        */
+    
     }
 
 	$scope.recording = function (on) {
