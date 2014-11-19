@@ -140,7 +140,7 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
         };
 
     $scope.updateLine = function(){
-    	
+    	console.log("updating line");
     	$scope.paths.p1.latlngs = geoLocationService.latLngs;
     };
 
@@ -155,6 +155,7 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
     };
 
   	geoLocationService.registerObserverCallback(updateLocation);
+	geoLocationService.registerObserverCallback(updateLine);
 
     $scope.moveCenter = function(newPos) {
          $scope.filters.center.lat = newPos.coords.latitude;
