@@ -123,9 +123,9 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
 	
 	$scope.filters = {};
     $scope.filters.center = {
-        lat: 51.505,
-        lng: -0.09,
-        zoom: 11
+        lat: 9.933253,
+        lng:  -84.077001,
+        zoom: 12
     };
     
     $scope.paths = {
