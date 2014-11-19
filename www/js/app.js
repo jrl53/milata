@@ -125,18 +125,14 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
     $scope.filters.center = {
         lat: 51.505,
         lng: -0.09,
-        zoom: 5
+        zoom: 11
     };
     
     $scope.paths = {
             p1: {
                 color: '#008000',
-                weight: 8,
-                latlngs: [
-                    { lat: 51.50, lng: -0.082 },
-                    { lat: 48.83, lng: 2.37 },
-                    { lat: 41.91, lng: 12.48 }
-                ],
+                weight: 3,
+                latlngs: [],
             }
         };
 
