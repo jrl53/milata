@@ -28,9 +28,12 @@ MapApp.factory('geoLocationService', function () {
 	var ls = false;
 
 	var fb = new Firebase("https://boiling-inferno-6943.firebaseio.com");
+	var geoFire = new GeoFire(fb.child("liveLocs"));
 
 	var observerCallbacks = [];
 	
+	var username = generateRandomString(5);
+
 	service.latLngs = [];
 	service.currentPosition = {};
 	
@@ -60,6 +63,16 @@ MapApp.factory('geoLocationService', function () {
 			service.currentPosition = newPosition;
 			var toPush = {lat:newPosition.coords.latitude, lng:newPosition.coords.longitude};
 			service.latLngs.push(toPush);
+
+			geoFire.set(username,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function(){
+				console.log("Current user " + username + "'s location has been added to GeoFire");
+
+			      // When the user disconnects from Firebase (e.g. closes the app, exits the browser),
+			      // remove their GeoFire entry
+			      fb.child("liveLocs").child(username).onDisconnect().remove();
+			  }).catch(function(error){
+			  	console.log(error);
+			  });
 
 			notifyObservers();
 			lt = now;
@@ -99,6 +112,21 @@ MapApp.factory('geoLocationService', function () {
 	
 	}
 
+	  /*************/
+  /*  HELPERS  */
+  /*************/
+  /* Returns a random string of the inputted length */
+  function generateRandomString(length) {
+      var text = "";
+      var validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for(var i = 0; i < length; i++) {
+          text += validChars.charAt(Math.floor(Math.random() * validChars.length));
+      }
+
+      return text;
+  }
+
 
 	return service;
 });
@@ -132,6 +160,7 @@ MapApp.controller('MainCtrl', ['$scope', function($scope) {
 MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocationService', 
 	function($scope, $ionicModal, leafletData, geoLocationService) {
 	
+	$scope.username = "Jose";
 	
 	$scope.filters = {};
     $scope.filters.center = {
@@ -171,6 +200,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     	//alert("yey!");
     	$scope.currentPos = geoLocationService.currentPosition;
     	$scope.moveCenter($scope.currentPos);
+
     	$scope.$apply();
 
     };
