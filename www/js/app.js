@@ -56,7 +56,7 @@ MapApp.factory('geoLocationService', function () {
 			//alert("in service");
 			service.currentPosition = newPosition;
 			var toPush = {lat:newPosition.coords.latitude, lng:newPosition.coords.longitude};
-			latLngs.push(toPush);
+			service.latLngs.push(toPush);
 
 			notifyObservers();
 			lt = now;
