@@ -23,12 +23,12 @@ MapApp.factory('geoLocationService', function () {
 //	'use strict';
 	var service = {};
 	var watchId;
-	var latLngs = new Array();
 	var lt = 0;
 	var ls = false;
 
 	var observerCallbacks = [];
-
+	
+	service.latLngs = [];
 	service.currentPosition = {};
 	
 	//Notification system*********************************
@@ -57,6 +57,7 @@ MapApp.factory('geoLocationService', function () {
 			service.currentPosition = newPosition;
 			var toPush = {lat:newPosition.coords.latitude, lng:newPosition.coords.longitude};
 			latLngs.push(toPush);
+
 			notifyObservers();
 			lt = now;
 			ls = 1;
@@ -139,7 +140,7 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
             }
         };
 
-    $scope.updateLine = function(){
+    var updateLine = function(){
     	console.log("updating line");
     	$scope.paths.p1.latlngs = geoLocationService.latLngs;
     };
