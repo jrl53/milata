@@ -9,7 +9,8 @@ MapApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, 
 	$stateProvider
 		.state('menu', {url: "/map", abstract: true, templateUrl: "templates/menu.html"})
 		.state('menu.home', {url: '/home', views:	 {'menuContent': {templateUrl: 'gpsView.html', controller: 'GpsCtrl'} }  })
-		.state('menu.help', {url: '/help', views: {'menuContent': {templateUrl: 'helpView.html', controller: 'HelpCtrl'} }  });
+		.state('menu.help', {url: '/help', views: {'menuContent': {templateUrl: 'helpView.html', controller: 'HelpCtrl'} }  })
+		.state('menu.form', {url: '/form', views: {'menuContent': {templateUrl: 'templates/search.html', controller: 'HelpCtrl'} }  });
 
 	// if none of the above states are matched, use this as the fallback
 	$urlRouterProvider.otherwise('/map/home');
@@ -109,13 +110,10 @@ MapApp.controller('MainCtrl', ['$scope', function($scope) {
 /**
  * A google map / GPS controller.
  */
-MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
-	function($scope, leafletData, geoLocationService) {
+MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocationService', 
+	function($scope, $ionicModal, leafletData, geoLocationService) {
 	
 	
-	 
-	//$scope.ta = document.querySelector('textarea');
-	//$scope.ts = document.querySelector('#stopstext');
 	$scope.lt = 0;
 	$scope.ls = false;
 	$scope.track = false;
@@ -131,7 +129,7 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
     $scope.paths = {
             p1: {
                 color: '#008000',
-                weight: 3,
+                weight: 4,
                 latlngs: [],
             }
         };
@@ -169,24 +167,15 @@ MapApp.controller('GpsCtrl', ['$scope','leafletData', 'geoLocationService',
 	    }
 	  };
 	
-	
-		
-
-/*	function onChange(newPosition) {
-		$scope.currentPosition = newPosition;	  //Set for two-way binding
-		
-
-		var now = new Date().getTime();
-		if ($scope.ls != 1 || now - $scope.lt > 1000) {
-			
-			geoLocationService.doYourThing();
-			
-			$scope.lt = now;
-			$scope.ls = 1;
-		}
-		
-	}
-*/
+	// Load the modal from the given template URL
+    $ionicModal.fromTemplateUrl('templates/modal.html', function($ionicModal) {
+        $scope.modal = $ionicModal;
+    }, {
+        // Use our scope for the scope of the modal to keep it simple
+        scope: $scope,
+        // The animation we want to use for the modal entrance
+        animation: 'slide-in-up'
+    });
 	
 
 	
