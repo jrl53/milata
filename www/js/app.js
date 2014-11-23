@@ -276,13 +276,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 
    
 
-    $scope.markers = {sloMarker: {
-                lat: 59.91,
-                lng: 10.75,
-                message: "I want to travel here!",
-                focus: true,
-                draggable: false
-            }};
+    $scope.markers = {};
 
     $scope.message = {
     	routeName : '',
