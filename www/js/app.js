@@ -135,7 +135,7 @@ MapApp.factory('geoLocationService', function () {
 		    		lat: vehicle.l[0],
 		    		lng:  vehicle.l[1],
 		            message: vehicleId,
-		            focus: true,
+		            focus: false,
 		            draggable: false
 		        };
 		    observerCallbacks[2]();
@@ -148,7 +148,7 @@ MapApp.factory('geoLocationService', function () {
 		    		lat: location[0],
 		    		lng:  location[1],
 		            message: vehicleId,
-		            focus: true,
+		            focus: false,
 		            draggable: false
 		        };
 		    observerCallbacks[2]();
