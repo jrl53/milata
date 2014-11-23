@@ -36,7 +36,8 @@ MapApp.factory('geoLocationService', function () {
 
 	service.latLngs = [];
 	service.currentPosition = {};
-	
+	service.markers = {};
+
 	//Notification system*********************************
 	service.registerObserverCallback = function(callback){
 		observerCallbacks.push(callback);
@@ -113,20 +114,95 @@ MapApp.factory('geoLocationService', function () {
 	}
 
 	  /*************/
-  /*  HELPERS  */
-  /*************/
-  /* Returns a random string of the inputted length */
-  function generateRandomString(length) {
-      var text = "";
-      var validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	  /*  HELPERS  */
+	  /*************/
+	  /* Returns a random string of the inputted length */
+	  function generateRandomString(length) {
+	      var text = "";
+	      var validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-      for(var i = 0; i < length; i++) {
-          text += validChars.charAt(Math.floor(Math.random() * validChars.length));
-      }
+	      for(var i = 0; i < length; i++) {
+	          text += validChars.charAt(Math.floor(Math.random() * validChars.length));
+	      }
 
-      return text;
-  }
+	      return text;
+	  }
 
+	  	function updateMarker(vehicle, vehicleId){
+    		console.log("Adding Marker in factory side", vehicle.l[0])
+			service.markers[vehicleId] = 
+				{
+		    		lat: vehicle.l[0],
+		    		lng:  vehicle.l[1],
+		            message: vehicleId,
+		            focus: true,
+		            draggable: false
+		        };
+		    notifyObservers();
+		};
+
+	  	/*************/
+		/*  GEOQUERY */
+		/*************/
+		// Keep track of all of the vehicles currently within the query
+		var vehiclesInQuery = {};
+
+		// Create a new GeoQuery instance
+		var geoQuery = geoFire.query({
+		  center: [9.961140, -84.109657],
+		  radius: 20
+		});
+
+		/* Adds new vehicle markers to the map when they enter the query */
+		geoQuery.on("key_entered", function(vehicleId, vehicleLocation) {
+		  console.log("someone entered!", vehicleId);
+		  // Specify that the vehicle has entered this query
+		  
+		  vehiclesInQuery[vehicleId] = true;
+
+		  // Look up the vehicle's data in the Transit Open Data Set
+		  fb.child("liveLocs").child(vehicleId).once("value", function(dataSnapshot) {
+		    // Get the vehicle data from the Open Data Set
+		    vehicle = dataSnapshot.val();
+
+		    // If the vehicle has not already exited this query in the time it took to look up its data in the Open Data
+		    // Set, add it to the map
+		    if (vehicle !== null && vehiclesInQuery[vehicleId] === true) {
+		      // Add the vehicle to the list of vehicles in the query
+		      vehiclesInQuery[vehicleId] = vehicle;
+
+		      // Create a new marker for the vehicle
+		      updateMarker(vehicle, vehicleId);
+		    }
+		  });
+		});
+
+		/* Moves vehicles markers on the map when their location within the query changes */
+		geoQuery.on("key_moved", function(vehicleId, vehicleLocation) {
+		  // Get the vehicle from the list of vehicles in the query
+		  console.log(vehicleId + "moved to" + location);
+		  var vehicle = vehiclesInQuery[vehicleId];
+
+		  // Animate the vehicle's marker
+		  if (typeof vehicle !== "undefined" && typeof vehicle.marker !== "undefined") {
+		    updateMarker(vehicle)
+		  }
+		});
+
+		/* Removes vehicle markers from the map when they exit the query */
+		geoQuery.on("key_exited", function(vehicleId, vehicleLocation) {
+		  // Get the vehicle from the list of vehicles in the query
+		  vehicleId = vehicleId.split(":")[1];
+		  var vehicle = vehiclesInQuery[vehicleId];
+
+		  // If the vehicle's data has already been loaded from the Open Data Set, remove its marker from the map
+		  if (vehicle !== true) {
+		    vehicle.marker.setMap(null);
+		  }
+
+		  // Remove the vehicle from the list of vehicles in the query
+		  delete vehiclesInQuery[vehicleId];
+		});
 
 	return service;
 });
@@ -181,12 +257,21 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
             }
         };
 
+   
+
+    $scope.markers = {};
+
     $scope.message = {
     	routeName : '',
     	company : '',
     	name : '',
     	email : '',
 
+    };
+
+    var updateMarkers = function(){
+    	console.log("updating markers");
+    	$scope.markers = geoLocationService.markers;
     };
 
     var updateLine = function(){
@@ -207,6 +292,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 
   	geoLocationService.registerObserverCallback(updateLocation);
 	geoLocationService.registerObserverCallback(updateLine);
+	geoLocationService.registerObserverCallback(updateMarkers);
 
     $scope.moveCenter = function(newPos) {
          $scope.filters.center.lat = newPos.coords.latitude;
@@ -237,7 +323,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
         animation: 'slide-in-up'
     });
 	
-
+    
 	
 }]);
 
