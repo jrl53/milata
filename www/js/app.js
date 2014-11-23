@@ -128,7 +128,7 @@ MapApp.factory('geoLocationService', function () {
 	      return text;
 	  }
 
-	  	function updateMarker(vehicle, vehicleId){
+	  	function addMarker(vehicle, vehicleId){
     		console.log("Adding Marker in factory side", vehicle.l[0])
 			service.markers[vehicleId] = 
 				{
@@ -139,6 +139,23 @@ MapApp.factory('geoLocationService', function () {
 		            draggable: false
 		        };
 		    notifyObservers();
+		};
+
+		function updateMarker(location, vehicleId){
+    		console.log("Updating Marker in factory side", vehicle.l[0])
+			service.markers[vehicleId] = 
+				{
+		    		lat: location[0],
+		    		lng:  location[1],
+		            message: vehicleId,
+		            focus: true,
+		            draggable: false
+		        };
+		    notifyObservers();
+		};
+
+		function deleteMarker(){
+			delete service.markers[vehicleId]
 		};
 
 	  	/*************/
@@ -172,7 +189,7 @@ MapApp.factory('geoLocationService', function () {
 		      vehiclesInQuery[vehicleId] = vehicle;
 
 		      // Create a new marker for the vehicle
-		      updateMarker(vehicle, vehicleId);
+		      addMarker(vehicle, vehicleId);
 		    }
 		  });
 		});
@@ -180,25 +197,24 @@ MapApp.factory('geoLocationService', function () {
 		/* Moves vehicles markers on the map when their location within the query changes */
 		geoQuery.on("key_moved", function(vehicleId, vehicleLocation) {
 		  // Get the vehicle from the list of vehicles in the query
-		  console.log(vehicleId + "moved to" + location);
+		  console.log(vehicleId + " moved to " + vehicleLocation[0] + ", " + vehicleLocation[1]);
 		  var vehicle = vehiclesInQuery[vehicleId];
 
 		  // Animate the vehicle's marker
 		  if (typeof vehicle !== "undefined" && typeof vehicle.marker !== "undefined") {
-		    updateMarker(vehicle)
+		    updateMarker(vehicleLocation, vehicleId)
 		  }
 		});
 
 		/* Removes vehicle markers from the map when they exit the query */
 		geoQuery.on("key_exited", function(vehicleId, vehicleLocation) {
 		  // Get the vehicle from the list of vehicles in the query
-		  vehicleId = vehicleId.split(":")[1];
+		  console.log(vehicleId + " was removed");
 		  var vehicle = vehiclesInQuery[vehicleId];
 
 		  // If the vehicle's data has already been loaded from the Open Data Set, remove its marker from the map
-		  if (vehicle !== true) {
-		    vehicle.marker.setMap(null);
-		  }
+		  
+		  deleteMarker(vehicleId);
 
 		  // Remove the vehicle from the list of vehicles in the query
 		  delete vehiclesInQuery[vehicleId];
