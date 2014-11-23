@@ -202,8 +202,8 @@ MapApp.factory('geoLocationService', function () {
 		  var vehicle = vehiclesInQuery[vehicleId];
 
 		  // Animate the vehicle's marker
-		  if (typeof vehicle !== "undefined" && typeof vehicle.marker !== "undefined") {
-		    updateMarker(vehicleLocation, vehicleId)
+		  if (typeof vehicle !== "undefined") {
+		    updateMarker(vehicleLocation, vehicleId);
 		  }
 		});
 
