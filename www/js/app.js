@@ -138,7 +138,7 @@ MapApp.factory('geoLocationService', function () {
 		            focus: true,
 		            draggable: false
 		        };
-		    notifyObservers();
+		    observerCallbacks[2]();
 		};
 
 		function updateMarker(location, vehicleId){
@@ -151,11 +151,12 @@ MapApp.factory('geoLocationService', function () {
 		            focus: true,
 		            draggable: false
 		        };
-		    notifyObservers();
+		    observerCallbacks[2]();
 		};
 
-		function deleteMarker(){
-			delete service.markers[vehicleId]
+		function deleteMarker(vehicleId){
+			delete service.markers[vehicleId];
+			observerCallbacks[2]();
 		};
 
 	  	/*************/
@@ -275,7 +276,13 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 
    
 
-    $scope.markers = {};
+    $scope.markers = {sloMarker: {
+                lat: 59.91,
+                lng: 10.75,
+                message: "I want to travel here!",
+                focus: true,
+                draggable: false
+            }};
 
     $scope.message = {
     	routeName : '',
@@ -285,10 +292,12 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 
     };
 
+    
     var updateMarkers = function(){
     	console.log("updating markers");
     	$scope.markers = geoLocationService.markers;
     };
+
 
     var updateLine = function(){
     	console.log("updating line");
