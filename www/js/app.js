@@ -142,15 +142,10 @@ MapApp.factory('geoLocationService', function () {
 		};
 
 		function updateMarker(location, vehicleId){
-    		console.log("Updating Marker in factory side", vehicle.l[0])
-			service.markers[vehicleId] = 
-				{
-		    		lat: location[0],
-		    		lng:  location[1],
-		            message: vehicleId,
-		            focus: false,
-		            draggable: false
-		        };
+    		console.log("Updating Marker in factory side", location[0])
+			service.markers[vehicleId].lat = location[0];
+			service.markers[vehicleId].lng = location[1];
+		    		
 		    observerCallbacks[2]();
 		};
 
