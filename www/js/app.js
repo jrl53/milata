@@ -290,12 +290,14 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     var updateMarkers = function(){
     	console.log("updating markers");
     	$scope.markers = geoLocationService.markers;
+    	$scope.$apply();
     };
 
 
     var updateLine = function(){
     	console.log("updating line");
     	$scope.paths.p1.latlngs = geoLocationService.latLngs;
+    	
     };
 
 
