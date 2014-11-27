@@ -35,8 +35,6 @@ MapApp.factory('geoLocationService', function () {
 	var username = generateRandomString(5);
 
 	service.latLngs = [];
-	service.stops = [];
-
 	service.currentPosition = {};
 	service.markers = {};
 
@@ -130,8 +128,8 @@ MapApp.factory('geoLocationService', function () {
 	      return text;
 	  }
 
-	  	function addLiveMarker(vehicle, vehicleId){
-    		console.log("Adding Live Marker in factory side", vehicle.l[0])
+	  	function addMarker(vehicle, vehicleId){
+    		console.log("Adding Marker in factory side", vehicle.l[0])
 			service.markers[vehicleId] = 
 				{
 		    		lat: vehicle.l[0],
@@ -143,27 +141,7 @@ MapApp.factory('geoLocationService', function () {
 		    observerCallbacks[2]();
 		};
 
-		function addStopMarker(id){
-			console.log("Adding Stop Marker");
-			service.markers[id] = 
-				{
-		    		lat: service.currentPosition.coords.latitude,
-		    		lng:  service.currentPosition.coords.longitude,
-		            message: "Parada",
-		            focus: false,
-		            draggable: true
-		        };
-
-		    service.stops.push({
-		    		lat: service.currentPosition.coords.latitude,
-		    		lng:  service.currentPosition.coords.longitude,
-		            message: "Parada",
-		            focus: false,
-		            draggable: true
-		        })
-		};
-
-		function updateLiveMarker(location, vehicleId){
+		function updateMarker(location, vehicleId){
     		console.log("Updating Marker in factory side", location[0])
 			service.markers[vehicleId].lat = location[0];
 			service.markers[vehicleId].lng = location[1];
@@ -171,7 +149,7 @@ MapApp.factory('geoLocationService', function () {
 		    observerCallbacks[2]();
 		};
 
-		function deleteLiveMarker(vehicleId){
+		function deleteMarker(vehicleId){
 			delete service.markers[vehicleId];
 			observerCallbacks[2]();
 		};
@@ -207,7 +185,7 @@ MapApp.factory('geoLocationService', function () {
 		      vehiclesInQuery[vehicleId] = vehicle;
 
 		      // Create a new marker for the vehicle
-		      addLiveMarker(vehicle, vehicleId);
+		      addMarker(vehicle, vehicleId);
 		    }
 		  });
 		});
@@ -220,7 +198,7 @@ MapApp.factory('geoLocationService', function () {
 
 		  // Animate the vehicle's marker
 		  if (typeof vehicle !== "undefined") {
-		    updateLiveMarker(vehicleLocation, vehicleId);
+		    updateMarker(vehicleLocation, vehicleId);
 		  }
 		});
 
@@ -232,7 +210,7 @@ MapApp.factory('geoLocationService', function () {
 
 		  // If the vehicle's data has already been loaded from the Open Data Set, remove its marker from the map
 		  
-		  deleteLiveMarker(vehicleId);
+		  deleteMarker(vehicleId);
 
 		  // Remove the vehicle from the list of vehicles in the query
 		  delete vehiclesInQuery[vehicleId];
@@ -301,36 +279,9 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     	name : '',
     	email : '',
 
-    };	    
-
-    $scope.layers = {
-    /*	baselayers : {
-    		osm : {
-    			name: 'OpenStreetMap',
-                type: 'xyz',
-                url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                layerOptions: {
-                    subdomains: ['a', 'b', 'c'],
-                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                    continuousWorld: true
-    			}
-    		}
-    	}, */
-    	overlays : {
-    		vehicles : {
-    			name : 'Vehicles',
-    			type : 'group',
-    			visible : true
-    		},
-    		stops : {
-    			name : 'Stops',
-    			type : 'group',
-    			visible : true
-    		}
-
-    	}
     };
 
+    
     var updateMarkers = function(){
     	console.log("updating markers");
     	$scope.markers = geoLocationService.markers;
@@ -349,7 +300,6 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     	console.log("updating");
     	//alert("yey!");
     	$scope.currentPos = geoLocationService.currentPosition;
-    	
     	$scope.moveCenter($scope.currentPos);
 
     	$scope.$apply();
@@ -378,11 +328,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 	$scope.sendtoFBase = function(){
 		geoLocationService.sendtoFBase($scope.message);
 	};
-
-	$scope.addStop = function(){
-		geoLocationService.addStopMarker();
-	};
-
+	
 	// Load the modal from the given template URL
     $ionicModal.fromTemplateUrl('templates/modal.html', function($ionicModal) {
         $scope.modal = $ionicModal;
