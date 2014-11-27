@@ -304,7 +304,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     };	    
 
     $scope.layers = {
-    /*	baselayers : {
+    	baselayers : {
     		osm : {
     			name: 'OpenStreetMap',
                 type: 'xyz',
@@ -315,7 +315,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
                     continuousWorld: true
     			}
     		}
-    	}, */
+    	}, 
     	overlays : {
     		vehicles : {
     			name : 'Vehicles',
