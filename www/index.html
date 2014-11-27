@@ -52,7 +52,9 @@
 			
 			<!-- map directive-->
 			
-			<leaflet center="filters.center" paths="paths" markers="markers" tiles="tiles" width="100%" height="100%" controls="controls"  data-tap-disabled="true"> </leaflet>
+			<leaflet center="filters.center" paths="paths" markers="markers" tiles="tiles" width="100%" height="100%" data-tap-disabled="true"> </leaflet>
+			
+			
 			
 			</ion-content>
 
@@ -63,13 +65,15 @@
 			  <div class="buttons">
 				<button class="button" ng-click="recording(false)">Stop</button>
 			  </div>
-			  <div class="buttons" ng-click="addStopMarker()">
+			  <div class="buttons" ng-click="addMarker()">
 				<button class="button">Add Stop</button>
 			  </div>
 			  <div class="buttons" ng-click="modal.show()">
 				<button class="button">Submit</button>
 			  </div>
 			  
+			  
+			
 			  
 			</ion-footer-bar>
 
