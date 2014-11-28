@@ -279,7 +279,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     	name : '',
     	email : '',
 
-<<<<<<< HEAD
+
     };	    
 
     $scope.layers = {
@@ -308,8 +308,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     		}
 
     	}
-=======
->>>>>>> parent of 1f8b351... With error
+
     };
 
     
