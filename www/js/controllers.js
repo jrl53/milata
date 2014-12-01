@@ -121,8 +121,8 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 	};
 	
 	// Load the modal from the given template URL
-    $ionicModal.fromTemplateUrl('templates/modal.html', function($ionicModal) {
-        $scope.modal = $ionicModal;
+    $ionicModal.fromTemplateUrl('templates/submitModal.html', function($ionicModal) {
+        $scope.submitModal = $ionicModal;
     }, {
         // Use our scope for the scope of the modal to keep it simple
         scope: $scope,
@@ -130,6 +130,14 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
         animation: 'slide-in-up'
     });
 	
+    $ionicModal.fromTemplateUrl('templates/routeModal.html', function($ionicModal) {
+        $scope.routeModal = $ionicModal;
+    }, {
+        // Use our scope for the scope of the modal to keep it simple
+        scope: $scope,
+        // The animation we want to use for the modal entrance
+        animation: 'slide-in-up'
+    });
     
 	
 }]);

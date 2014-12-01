@@ -1,6 +1,15 @@
 //'use strict';
 var MapApp = angular.module('MapApp', [
-	'ionic', 'leaflet-directive']);
+	'ionic', 'leaflet-directive', 'firebase']);
+
+MapApp.run(function($ionicPlatform) {
+  $ionicPlatform.ready(function() {
+    if(window.StatusBar) {
+      StatusBar.styleDefault();
+    }
+  });
+});
+
 
 /**
  * Routing table including associated controllers.
@@ -20,20 +29,27 @@ MapApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, 
 * Geolocation service.
 */
 
-MapApp.factory('geoLocationService', function () {
+MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 //	'use strict';
+	
+	//Globals
+	var firebaseURL = "https://boiling-inferno-6943.firebaseio.com";
+	var username = generateRandomString(5);
+	
+	//-------------------
+
 	var service = {};
 	var watchId;
 	var lt = 0;
 	var ls = false;
-
-	var fb = new Firebase("https://boiling-inferno-6943.firebaseio.com");
+	
+	var fb = new Firebase(firebaseURL);
 	var geoFire = new GeoFire(fb.child("liveLocs"));
+	
+	var sessionRef;
 
 	var observerCallbacks = [];
 	
-	var username = generateRandomString(5);
-
 	service.latLngs = [];
 	service.currentPosition = {};
 	service.markers = {};
@@ -62,12 +78,15 @@ MapApp.factory('geoLocationService', function () {
 		if (ls != 1 || now - lt > 1000) {
 			//alert("in service");
 			service.currentPosition = newPosition;
-			var toPush = {lat:newPosition.coords.latitude, lng:newPosition.coords.longitude};
-			service.latLngs.push(toPush);
+			var toPush = {
+				lat:newPosition.coords.latitude, 
+				lng:newPosition.coords.longitude,
+				time:now
+			};
+			service.latLngs.$add(toPush);
 
 			geoFire.set(username,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function(){
 				console.log("Current user " + username + "'s location has been added to GeoFire");
-
 			      // When the user disconnects from Firebase (e.g. closes the app, exits the browser),
 			      // remove their GeoFire entry
 			      fb.child("liveLocs").child(username).onDisconnect().remove();
@@ -88,6 +107,12 @@ MapApp.factory('geoLocationService', function () {
 			maximumAge: 60000,
 			timeout: 15000
 		});
+
+	    //Get the unique id object reference from Firebase
+	    sessionRef = fb.child("routes").push({created: Firebase.ServerValue.TIMESTAMP });
+	    var sync = $firebase(sessionRef.child("geometry"));
+	    //Set up binding
+	    service.latLngs = sync.$asArray();
 	}
 	
 	service.stop = function () {
@@ -99,14 +124,18 @@ MapApp.factory('geoLocationService', function () {
 
 	service.sendtoFBase = function(message){
 		
-        message.geometry = service.latLngs;
+        message.path = service.latLngs; //Attach path to message
 		
 		fb.push(message,				
 			function(error){
 					if (error) {
 						alert("Error" + error);
 					} else {
-						alert("Data submitted successfully");
+						$ionicPopup.alert({
+						     title: 'Pura vida!',
+						     template: 'Data enviada satisfactoriamente. Muchas gracias por contribuir.'
+						   });
+						   
 					}
 			}
 		);
@@ -219,22 +248,6 @@ MapApp.factory('geoLocationService', function () {
 	return service;
 });
 
-
-/**
- * HEADER - handle menu toggle
- */
-MapApp.controller('HeaderCtrl', function($scope) {
-	// Main app controller, empty for the example
-	$scope.leftButtons = [
-		{ 
-		type: 'button-clear',
-		content: '<i class="icon ion-navicon"></i>',
-		tap: function(e) {
-			$scope.sideMenuController.toggleLeft();
-			}
-		}
-	];
-});
 
 
 

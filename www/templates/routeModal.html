@@ -1,0 +1,23 @@
+<div class="modal">
+        <header class="bar bar-header bar-royal">
+          <h1 class="title">En cual bus esta?</h1>
+          <div class="button button-clear" ng-click="routeModal.hide()"><span class="icon ion-close"></span></div>
+        </header>
+        <ion-content class="has-header"  >
+     
+         <ion-list>
+        <ion-radio ng-model="choice" ng-value="'A'">Moravia</ion-radio>
+          <ion-radio ng-model="choice" ng-value="'B'">Escazu</ion-radio>
+          <ion-radio ng-model="choice" ng-value="'C'">Desamparados</ion-radio>
+
+      </ion-list>
+        
+        <div class="padding container">
+                            <div class="row">
+                           
+                                <button ng-click="routeModal.hide()" class="button button-stable  button-small col col-40 "> OK </button>
+                            </div>
+                        </div>
+        
+        </ion-content>
+      </div>
