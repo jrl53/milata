@@ -6,9 +6,8 @@
         <ion-content class="has-header"  >
      
          <ion-list>
-        <ion-radio ng-model="choice" ng-value="'A'">Moravia</ion-radio>
-          <ion-radio ng-model="choice" ng-value="'B'">Escazu</ion-radio>
-          <ion-radio ng-model="choice" ng-value="'C'">Desamparados</ion-radio>
+          <ion-radio ng-repeat="route in allRoutes" ng-model="routeData.currentRouteId" ng-value="route.id">{{route.name}}</ion-radio>
+      
 
       </ion-list>
         

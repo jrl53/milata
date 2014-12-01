@@ -12,6 +12,25 @@ MapApp.controller('MainCtrl', ['$scope', function($scope) {
 MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocationService', 
 	function($scope, $ionicModal, leafletData, geoLocationService) {
 	
+    $scope.allRoutes = [{
+        id: "001",
+        name: "Moravia",
+        color: 'red'
+    },
+    {
+        id: "002",
+        name: "Escazu",
+        color: 'green'
+    },
+    {
+        id: "003",
+        name: "Desamparados",
+        color: 'blue'
+    
+    }];
+
+    $scope.routeData = geoLocationService.routeData;   
+
 	$scope.username = "Jose";
 	
 	$scope.filters = {};
@@ -110,9 +129,11 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 
 	$scope.recording = function (on) {
 	    if (on) {
+          $scope.isOn = on;
 	      geoLocationService.start();
 	    } else {
 	      geoLocationService.stop();
+          $scope.isOn = on;
 	    }
 	  };
 

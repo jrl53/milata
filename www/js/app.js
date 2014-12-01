@@ -36,6 +36,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 	var firebaseURL = "https://boiling-inferno-6943.firebaseio.com";
 	var username = generateRandomString(5);
 	
+	
+
 	//-------------------
 
 	var service = {};
@@ -53,6 +55,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 	service.latLngs = [];
 	service.currentPosition = {};
 	service.markers = {};
+	//service.currentRoute = {};
+	service.routeData = {
+        currentRouteId: ""
+    };
 
 	//Notification system*********************************
 	service.registerObserverCallback = function(callback){
@@ -122,6 +128,14 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 		alert(watchId);
 	}
 
+	service.resume = function() {
+		watchId = navigator.geolocation.watchPosition(onChange, onChangeError, {
+			enableHighAccuracy: true,
+			maximumAge: 60000,
+			timeout: 15000
+		});
+	}
+
 	service.sendtoFBase = function(message){
 		
         message.path = service.latLngs; //Attach path to message
@@ -165,7 +179,11 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 		    		lng:  vehicle.l[1],
 		            message: vehicleId,
 		            focus: false,
-		            draggable: false
+		            draggable: false,
+		            icon: {
+		            	type: 'awesomeMarker',
+		            	markerColor: 'red'
+		            }
 		        };
 		    observerCallbacks[2]();
 		};
