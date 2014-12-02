@@ -75,6 +75,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	    });
   	};
 
+
+
 	//*******************************************************
 /*	var setAllRoutes = function(snap) {
 		service.allRoutes = snap.val();
@@ -86,6 +88,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 */
 	
 	service.allRoutes = $firebase(fb.child("allRoutes")).$asObject();
+	console.log(service.allRoutes);
 
 	var onChangeError = function (error) {
   		alert("Error: " + error);
@@ -135,19 +138,24 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 		    	username: username,
 		    	routeID: service.routeData.currentRouteId
 		    });	
+
+		    //Set up binding
 			var sync = $firebase(sessionRef.child("geometry"));
 			service.latLngs = sync.$asArray();
-		    
+
+		    fb.child("liveLocsData").child(username).update({color: service.allRoutes[service.routeData.currentRouteId].color});
+
 		    geoFire.set(username,[position.coords.latitude, position.coords.longitude]).then(function(){
 				console.log("Current user " + username + "'s location has been added to GeoFire");
 			      // When the user disconnects from Firebase (e.g. closes the app, exits the browser),
 			      // remove their GeoFire entry
 			      fb.child("liveLocs").child(username).onDisconnect().remove();
 			      
+			      
 			  }).catch(function(error){
 			  	console.log(error);
 			  });
-		    //Set up binding
+		    
 		    
 
 	    	startWatching();
@@ -203,7 +211,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	      return text;
 	  }
 
-	  	function addMarker(vehicle, vehicleId){
+	  	function addMarker(vehicle, vehicleId, inColor){
     		console.log("Adding Marker in factory side", vehicle.l[0])
 			service.markers[vehicleId] = 
 				{
@@ -264,10 +272,16 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 			      // Add the vehicle to the list of vehicles in the query
 			      vehiclesInQuery[vehicleId] = vehicle;
 					// Create a new marker for the vehicle
-			    	addMarker(vehicle, vehicleId);
-			     
-			      		    }
-			  });  
+			      
+				  addMarker(vehicle, vehicleId);
+
+				  fb.child("liveLocsData").child(vehicleId).once("value", function(snap){ 
+				  	service.markers[vehicleId].icon.markerColor = snap.val().color;
+				  });
+
+			      }
+			  }); 
+
 
 		});
 
