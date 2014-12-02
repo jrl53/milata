@@ -34,7 +34,21 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
             }
         };
 
-    $scope.markers = {};
+    $scope.markers = {
+        
+        office:{
+            lat: 9.965061,
+            lng:  -84.120121,
+            message: "UltraPark II",
+            focus: false,
+            draggable: false,
+            icon: {
+                iconUrl: 'img/office.png',
+                iconSize: [30, 30]
+            }
+        }    
+    };
+
 
     $scope.message = {
     	routeName : '',
@@ -77,7 +91,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     var updateMarkers = function(){
     	console.log("updating markers");
     	$scope.markers = geoLocationService.markers;
-    	$scope.$apply();
+    //	$scope.$apply();
     };
 
 

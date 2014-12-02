@@ -14,7 +14,7 @@
         <div class="padding container">
                             <div class="row">
                            
-                                <button ng-click="routeModal.hide()" class="button button-stable  button-small col col-40 "> OK </button>
+                                <button ng-click="routeModal.hide();recording(true);" class="button button-stable  button-small col col-40 " ng-disabled="!routeData.currentRouteId"> OK </button>
                             </div>
                         </div>
         

@@ -55,9 +55,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	service.currentPosition = {};
 	service.markers = {};
 
-	service.routeData = {
-        currentRouteId: ""
-    };
+	service.routeData = {};
 
     service.allRoutes = {};
 
@@ -143,7 +141,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 			var sync = $firebase(sessionRef.child("geometry"));
 			service.latLngs = sync.$asArray();
 
-		    fb.child("liveLocsData").child(username).update({color: service.allRoutes[service.routeData.currentRouteId].color});
+		    fb.child("liveLocsData").child(username).update(service.allRoutes[service.routeData.currentRouteId]);
 
 		    geoFire.set(username,[position.coords.latitude, position.coords.longitude]).then(function(){
 				console.log("Current user " + username + "'s location has been added to GeoFire");
@@ -171,7 +169,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	    if (watchId) {
 	       navigator.geolocation.clearWatch(watchId);
 	    }
-		alert(watchId);
+
+	    fb.child("liveLocs").child(username).remove();
 	}
 
 	service.resume = function() {
@@ -220,10 +219,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 		            message: vehicleId,
 		            focus: false,
 		            draggable: false,
-		            icon: {
-		            	type: 'awesomeMarker',
-		            	markerColor: 'red'
-		            }
+		            icon: {}
 		        };
 		    observerCallbacks[2]();
 		};
@@ -250,7 +246,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 		// Create a new GeoQuery instance
 		var geoQuery = geoFire.query({
 		  center: [9.961140, -84.109657],
-		  radius: 20
+		  radius: 60
 		});
 
 		/* Adds new vehicle markers to the map when they enter the query */
@@ -276,7 +272,11 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 				  addMarker(vehicle, vehicleId);
 
 				  fb.child("liveLocsData").child(vehicleId).once("value", function(snap){ 
-				  	service.markers[vehicleId].icon.markerColor = snap.val().color;
+				  	service.markers[vehicleId].icon = {
+				  		type: 'awesomeMarker',
+				  		markerColor: snap.val().color
+				  	};
+				  	service.markers[vehicleId].message = snap.val().name;
 				  });
 
 			      }

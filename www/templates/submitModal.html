@@ -1,25 +1,17 @@
 <div class="modal">
         <header class="bar bar-header bar-royal">
-          <h1 class="title">Información</h1>
+          <h1 class="title">Antes de irse</h1>
           <div class="button button-clear" ng-click="submitModal.hide()"><span class="icon ion-close"></span></div>
         </header>
         <ion-content class="has-header"  >
      
           <div class="list">
 			  <label class="item item-input item-stacked-label">
-			    <span class="input-label">Nombre de Ruta</span>
-			    <input ng-model="message.routeName" type="text" placeholder="Moravia - San Jose">
-			  </label>
-			  <label class="item item-input item-stacked-label">
-			    <span class="input-label">Nombre de Compañía</span>
-			    <input ng-model="message.company" type="text" placeholder="MiBus S.A.">
-			  </label>
-			  <label class="item item-input item-stacked-label">
-			    <span class="input-label">Su Nombre</span>
+			    <span class="input-label">Su Nombre (opcional)</span>
 			    <input ng-model="message.name" type="text" placeholder="Agapito Rosales">
 			  </label>
 			  <label class="item item-input item-stacked-label">
-			    <span class="input-label">E-mail</span>
+			    <span class="input-label">E-mail (opcional)</span>
 			    <input ng-model="message.email" type="text" placeholder="agapito.rosales@gmail.com">
 			  </label>
 			 
@@ -27,8 +19,7 @@
 		   	
 		   	<div class="padding container">
                             <div class="row">
-                                <button ng-click="submitModal.hide()"  class="button button-stable button-small col col-40"              > Cancelar </button>
-                                <button ng-click="sendtoFBase()" class="button button-stable  button-small col col-40 col-offset-10"> Enviar </button>
+                                <button ng-click="recording(false);sendtoFBase();submitModal.hide();" class="button button-stable  button-small col col-40 "> Terminar viaje, mucha vara </button>
                             </div>
                         </div>
         

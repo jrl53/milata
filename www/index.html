@@ -62,19 +62,17 @@
 
 			<ion-footer-bar align-title="left" class="bar-dark" >
 			  <div class="buttons">
-				<button class="button" ng-click="recording(true)" ng-show="!isOn">Empezar</button>
+				<button class="button" ng-click="routeModal.show()" ng-show="!isOn">Estoy en un bus</button>
 			  </div>
 			  <div class="buttons">
-				<button class="button" ng-click="recording(false)" ng-show="isOn"> &nbsp&nbspPausa&nbsp&nbsp  </button>
+				<button class="button" ng-click="submitModal.show()" ng-show="isOn"> Me baje del bus  </button>
 			  </div>
 			  
-				  <div class="buttons" ng-click="routeModal.show()" >
+				  <div class="buttons" ng-click="" ng-show="isOn" >
 					<button class="button">Add Stop</button>
 				  </div>
 			  
-			  <div class="buttons" ng-click="submitModal.show()">
-				<button class="button">Submit</button>
-			  </div>
+			  
 			  
 
 			  
