@@ -91,7 +91,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     var updateMarkers = function(){
     	console.log("updating markers");
     	$scope.markers = geoLocationService.markers;
-    //	$scope.$apply();
+    	$scope.$apply();
     };
 
 
