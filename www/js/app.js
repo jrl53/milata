@@ -219,7 +219,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 		            message: vehicleId,
 		            focus: false,
 		            draggable: false,
-		            icon: {}
+		            icon: {
+		            	type: 'awesomeMarker',
+		            	markerColor: 'red'
+		            }
 		        };
 		    observerCallbacks[2]();
 		};
@@ -272,11 +275,9 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 				  addMarker(vehicle, vehicleId);
 
 				  fb.child("liveLocsData").child(vehicleId).once("value", function(snap){ 
-				  	service.markers[vehicleId].icon = {
-				  		type: 'awesomeMarker',
-				  		markerColor: snap.val().color
-				  	};
+				  	service.markers[vehicleId].icon.markerColor = snap.val().color;
 				  	service.markers[vehicleId].message = snap.val().name;
+				  	observerCallbacks[2]();
 				  });
 
 			      }
