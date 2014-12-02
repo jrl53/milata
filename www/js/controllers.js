@@ -12,26 +12,8 @@ MapApp.controller('MainCtrl', ['$scope', function($scope) {
 MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocationService', 
 	function($scope, $ionicModal, leafletData, geoLocationService) {
 	
-    $scope.allRoutes = [{
-        id: "001",
-        name: "Moravia",
-        color: 'red'
-    },
-    {
-        id: "002",
-        name: "Escazu",
-        color: 'green'
-    },
-    {
-        id: "003",
-        name: "Desamparados",
-        color: 'blue'
-    
-    }];
-
+    $scope.allRoutes = geoLocationService.allRoutes;
     $scope.routeData = geoLocationService.routeData;   
-
-	$scope.username = "Jose";
 	
 	$scope.filters = {};
     $scope.filters.center = {
@@ -116,9 +98,11 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 
     };
 
+    
   	geoLocationService.registerObserverCallback(updateLocation);
 	geoLocationService.registerObserverCallback(updateLine);
 	geoLocationService.registerObserverCallback(updateMarkers);
+  
 
     $scope.moveCenter = function(newPos) {
          $scope.filters.center.lat = newPos.coords.latitude;

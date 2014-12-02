@@ -10,6 +10,8 @@ MapApp.run(function($ionicPlatform) {
   });
 });
 
+MapApp.constant('fbURL',"https://boiling-inferno-6943.firebaseio.com");
+
 
 /**
  * Routing table including associated controllers.
@@ -29,15 +31,12 @@ MapApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, 
 * Geolocation service.
 */
 
-MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
+MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 //	'use strict';
 	
 	//Globals
-	var firebaseURL = "https://boiling-inferno-6943.firebaseio.com";
+	
 	var username = generateRandomString(5);
-	
-	
-
 	//-------------------
 
 	var service = {};
@@ -45,25 +44,29 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 	var lt = 0;
 	var ls = false;
 	
-	var fb = new Firebase(firebaseURL);
+	var fb = new Firebase(fbURL);
 	var geoFire = new GeoFire(fb.child("liveLocs"));
 	
 	var sessionRef;
 
 	var observerCallbacks = [];
-	
+
 	service.latLngs = [];
 	service.currentPosition = {};
 	service.markers = {};
-	//service.currentRoute = {};
+
 	service.routeData = {
         currentRouteId: ""
     };
 
+    service.allRoutes = {};
+
+    console.log(service.allRoutes);
+	
 	//Notification system*********************************
 	service.registerObserverCallback = function(callback){
 		observerCallbacks.push(callback);
-	}
+	};
 
 	var notifyObservers = function(){
 		angular.forEach(observerCallbacks, function(callback){
@@ -73,7 +76,17 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
   	};
 
 	//*******************************************************
+/*	var setAllRoutes = function(snap) {
+		service.allRoutes = snap.val();
+		observerCallbacks[3]();
+		console.log(snap.val());
+	};
+
+	fb.child("allRoutes").once("value",setAllRoutes);
+*/
 	
+	service.allRoutes = $firebase(fb.child("allRoutes")).$asObject();
+
 	var onChangeError = function (error) {
   		alert("Error: " + error);
 	};	
@@ -81,9 +94,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 	var onChange = function(newPosition) {
 
 		var now = new Date().getTime();
-		if (ls != 1 || now - lt > 1000) {
+		if (ls != 1 || now - lt > 2000) {
 			//alert("in service");
 			service.currentPosition = newPosition;
+
 			var toPush = {
 				lat:newPosition.coords.latitude, 
 				lng:newPosition.coords.longitude,
@@ -92,10 +106,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 			service.latLngs.$add(toPush);
 
 			geoFire.set(username,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function(){
-				console.log("Current user " + username + "'s location has been added to GeoFire");
-			      // When the user disconnects from Firebase (e.g. closes the app, exits the browser),
-			      // remove their GeoFire entry
-			      fb.child("liveLocs").child(username).onDisconnect().remove();
+				console.log("Setting new position in geoFire");
+			      
 			  }).catch(function(error){
 			  	console.log(error);
 			  });
@@ -107,18 +119,44 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 		
 	};
 
-	service.start = function () {
-	    watchId = navigator.geolocation.watchPosition(onChange, onChangeError, {
+	var startWatching = function(){
+		 watchId = navigator.geolocation.watchPosition(onChange, onChangeError, {
 			enableHighAccuracy: true,
 			maximumAge: 60000,
 			timeout: 15000
 		});
+	};
 
-	    //Get the unique id object reference from Firebase
-	    sessionRef = fb.child("routes").push({created: Firebase.ServerValue.TIMESTAMP });
-	    var sync = $firebase(sessionRef.child("geometry"));
-	    //Set up binding
-	    service.latLngs = sync.$asArray();
+	service.start = function () {
+	    var positionSuccess = function(position){
+		    //Get the unique id object reference from Firebase
+		    sessionRef = fb.child("routes").child(service.routeData.currentRouteId).push({
+		    	created: Firebase.ServerValue.TIMESTAMP,
+		    	username: username,
+		    	routeID: service.routeData.currentRouteId
+		    });	
+			var sync = $firebase(sessionRef.child("geometry"));
+			service.latLngs = sync.$asArray();
+		    
+		    geoFire.set(username,[position.coords.latitude, position.coords.longitude]).then(function(){
+				console.log("Current user " + username + "'s location has been added to GeoFire");
+			      // When the user disconnects from Firebase (e.g. closes the app, exits the browser),
+			      // remove their GeoFire entry
+			      fb.child("liveLocs").child(username).onDisconnect().remove();
+			      
+			  }).catch(function(error){
+			  	console.log(error);
+			  });
+		    //Set up binding
+		    
+
+	    	startWatching();
+
+	    };
+	    
+	    navigator.geolocation.getCurrentPosition(positionSuccess)
+
+
 	}
 	
 	service.stop = function () {
@@ -129,18 +167,12 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 	}
 
 	service.resume = function() {
-		watchId = navigator.geolocation.watchPosition(onChange, onChangeError, {
-			enableHighAccuracy: true,
-			maximumAge: 60000,
-			timeout: 15000
-		});
+		startWatching();
 	}
 
 	service.sendtoFBase = function(message){
 		
-        message.path = service.latLngs; //Attach path to message
-		
-		fb.push(message,				
+		sessionRef.set(message,				
 			function(error){
 					if (error) {
 						alert("Error" + error);
@@ -215,26 +247,28 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase) {
 
 		/* Adds new vehicle markers to the map when they enter the query */
 		geoQuery.on("key_entered", function(vehicleId, vehicleLocation) {
-		  console.log("someone entered!", vehicleId);
-		  // Specify that the vehicle has entered this query
-		  
-		  vehiclesInQuery[vehicleId] = true;
+			  console.log("someone entered!", vehicleId);
+			  // Specify that the vehicle has entered this query
+			  
+			  vehiclesInQuery[vehicleId] = true;
 
-		  // Look up the vehicle's data in the Transit Open Data Set
-		  fb.child("liveLocs").child(vehicleId).once("value", function(dataSnapshot) {
-		    // Get the vehicle data from the Open Data Set
-		    vehicle = dataSnapshot.val();
+			  // Look up the vehicle's data in the Transit Open Data Set
+			  fb.child("liveLocs").child(vehicleId).once("value", function(dataSnapshot) {
+			    // Get the vehicle data from the Open Data Set
+			    vehicle = dataSnapshot.val();
 
-		    // If the vehicle has not already exited this query in the time it took to look up its data in the Open Data
-		    // Set, add it to the map
-		    if (vehicle !== null && vehiclesInQuery[vehicleId] === true) {
-		      // Add the vehicle to the list of vehicles in the query
-		      vehiclesInQuery[vehicleId] = vehicle;
+			    // If the vehicle has not already exited this query in the time it took to look up its data in the Open Data
+			    // Set, add it to the map
+			    if (vehicle !== null && vehiclesInQuery[vehicleId] === true) {
 
-		      // Create a new marker for the vehicle
-		      addMarker(vehicle, vehicleId);
-		    }
-		  });
+			      // Add the vehicle to the list of vehicles in the query
+			      vehiclesInQuery[vehicleId] = vehicle;
+					// Create a new marker for the vehicle
+			    	addMarker(vehicle, vehicleId);
+			     
+			      		    }
+			  });  
+
 		});
 
 		/* Moves vehicles markers on the map when their location within the query changes */
