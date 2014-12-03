@@ -179,7 +179,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 
 	service.sendtoFBase = function(message){
 		
-		sessionRef.set(message,				
+		sessionRef.update(message,				
 			function(error){
 					if (error) {
 						alert("Error" + error);
