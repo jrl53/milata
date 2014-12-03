@@ -42,12 +42,13 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
             message: "UltraPark II",
             focus: false,
             draggable: false,
+            layer: 'stops',
             icon: {
                 iconUrl: 'img/office.png',
                 iconSize: [30, 30]
             }
         }    
-    };
+    };  
 
 
     $scope.message = {

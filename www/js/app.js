@@ -262,7 +262,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 			  // Look up the vehicle's data in the Transit Open Data Set
 			  fb.child("liveLocs").child(vehicleId).once("value", function(dataSnapshot) {
 			    // Get the vehicle data from the Open Data Set
-			    vehicle = dataSnapshot.val();
+			    var vehicle = dataSnapshot.val();
 
 			    // If the vehicle has not already exited this query in the time it took to look up its data in the Open Data
 			    // Set, add it to the map
@@ -272,12 +272,14 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 			      vehiclesInQuery[vehicleId] = vehicle;
 					// Create a new marker for the vehicle
 			      
-				  addMarker(vehicle, vehicleId);
+				  
 
 				  fb.child("liveLocsData").child(vehicleId).once("value", function(snap){ 
+				  	addMarker(vehicle, vehicleId);
 				  	service.markers[vehicleId].icon.markerColor = snap.val().color;
 				  	service.markers[vehicleId].message = snap.val().name;
 				  	observerCallbacks[2]();
+					
 				  });
 
 			      }
