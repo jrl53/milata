@@ -51,6 +51,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 
 	var observerCallbacks = [];
 
+	var userStopCount = 0;
+
 	service.latLngs = [];
 	service.currentPosition = {};
 	
@@ -179,6 +181,23 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 
 	service.resume = function() {
 		startWatching();
+	}
+
+	service.addStop = function(){
+		service.markers["US"+userStopCount] = {
+    		lat: service.currentPosition.coords.latitude,
+    		lng:  service.currentPosition.coords.longitude,
+            message: "new stop",
+            focus: false,
+            draggable: true,
+            layer: 'stops',
+            icon: {
+                iconUrl: 'img/bus_stop3.png',
+                iconSize: [50, 50]
+            }
+		}
+		userStopCount += 1;
+		observerCallbacks[2]();
 	}
 
 	service.sendtoFBase = function(message){

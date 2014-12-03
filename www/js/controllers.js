@@ -126,6 +126,10 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 	$scope.sendtoFBase = function(){
 		geoLocationService.sendtoFBase($scope.message);
 	};
+
+    $scope.addStop = function(){
+        geoLocationService.addStop();
+    };
 	
 	// Load the modal from the given template URL
     $ionicModal.fromTemplateUrl('templates/submitModal.html', function($ionicModal) {
