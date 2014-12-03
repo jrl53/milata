@@ -53,13 +53,28 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 
 	service.latLngs = [];
 	service.currentPosition = {};
-	service.markers = {};
+	
 
 	service.routeData = {};
 
     service.allRoutes = {};
 
-    console.log(service.allRoutes);
+    //Set initial static markers
+    service.markers = {
+    	office:{
+            lat: 9.965061,
+            lng:  -84.120121,
+            message: "UltraPark II",
+            focus: false,
+            draggable: false,
+            layer: 'stops',
+            icon: {
+                iconUrl: 'img/office.png',
+                iconSize: [30, 30]
+            }
+        }    
+    };
+
 	
 	//Notification system*********************************
 	service.registerObserverCallback = function(callback){
@@ -73,17 +88,6 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	    });
   	};
 
-
-
-	//*******************************************************
-/*	var setAllRoutes = function(snap) {
-		service.allRoutes = snap.val();
-		observerCallbacks[3]();
-		console.log(snap.val());
-	};
-
-	fb.child("allRoutes").once("value",setAllRoutes);
-*/
 	
 	service.allRoutes = $firebase(fb.child("allRoutes")).$asObject();
 	console.log(service.allRoutes);
@@ -219,6 +223,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 		            message: vehicleId,
 		            focus: false,
 		            draggable: false,
+		            layer: 'buses',
 		            icon: {
 		            	type: 'awesomeMarker',
 		            	markerColor: 'red'

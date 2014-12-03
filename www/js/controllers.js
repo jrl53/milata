@@ -14,8 +14,9 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 	
     $scope.allRoutes = geoLocationService.allRoutes;
     $scope.routeData = geoLocationService.routeData;   
+	$scope.markers = geoLocationService.markers;
 	
-	$scope.filters = {};
+    $scope.filters = {};
     $scope.filters.center = {
         lat: 9.933253,
         lng:  -84.077001,
@@ -34,21 +35,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
             }
         };
 
-    $scope.markers = {
-        
-        office:{
-            lat: 9.965061,
-            lng:  -84.120121,
-            message: "UltraPark II",
-            focus: false,
-            draggable: false,
-            layer: 'stops',
-            icon: {
-                iconUrl: 'img/office.png',
-                iconSize: [30, 30]
-            }
-        }    
-    };  
+    
 
 
     $scope.message = {
@@ -73,8 +60,8 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     		}
     	}, 
     	overlays : {
-    		vehicles : {
-    			name : 'Vehicles',
+    		buses : {
+    			name : 'Live buses',
     			type : 'group',
     			visible : true
     		},
