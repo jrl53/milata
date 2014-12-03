@@ -52,6 +52,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	var observerCallbacks = [];
 
 	var userStopCount = 0;
+	var userStops = []; 
 
 	service.latLngs = [];
 	service.currentPosition = {};
@@ -143,9 +144,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 		    	routeID: service.routeData.currentRouteId
 		    });	
 
-		    //Set up binding
+		    //Set up bindings
 			var sync = $firebase(sessionRef.child("geometry"));
 			service.latLngs = sync.$asArray();
+			userStops = $firebase(sessionRef.child("stops")).$asArray();
 
 		    fb.child("liveLocsData").child(username).update(service.allRoutes[service.routeData.currentRouteId]);
 
@@ -183,8 +185,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 		startWatching();
 	}
 
-	service.addStop = function(){
-		service.markers["US"+userStopCount] = {
+	
+	
+	service.addStop = function(){	
+		var mark = {
     		lat: service.currentPosition.coords.latitude,
     		lng:  service.currentPosition.coords.longitude,
             message: "new stop",
@@ -195,7 +199,9 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
                 iconUrl: 'img/bus_stop3.png',
                 iconSize: [50, 50]
             }
-		}
+		};
+		service.markers["US"+userStopCount] = mark;
+		userStops.$add(mark);
 		userStopCount += 1;
 		observerCallbacks[2]();
 	}
