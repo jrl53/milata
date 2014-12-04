@@ -15,6 +15,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     $scope.allRoutes = geoLocationService.allRoutes;
     $scope.routeData = geoLocationService.routeData;   
 	$scope.markers = geoLocationService.markers;
+    $scope.isOn = geoLocationService.isOn;
 	
     $scope.filters = {};
     $scope.filters.center = {
@@ -115,11 +116,11 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 
 	$scope.recording = function (on) {
 	    if (on) {
-          $scope.isOn = on;
+          geoLocationService.isOn = on;
 	      geoLocationService.start();
 	    } else {
 	      geoLocationService.stop();
-          $scope.isOn = on;
+          geoLocationService.isOn = on;
 	    }
 	  };
 

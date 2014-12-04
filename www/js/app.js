@@ -57,6 +57,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	service.latLngs = [];
 	service.currentPosition = {};
 	
+	service.isOn = false;
 
 	service.routeData = {};
 
