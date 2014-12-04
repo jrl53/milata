@@ -194,7 +194,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
     		lng:  service.currentPosition.coords.longitude,
             message: "new stop",
             focus: false,
-            draggable: true,
+            draggable: false,
             layer: 'stops',
             icon: {
                 iconUrl: 'img/bus_stop3.png',

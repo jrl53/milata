@@ -36,8 +36,6 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
             }
         };
 
-    
-
 
     $scope.message = {
     	routeName : '',
