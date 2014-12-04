@@ -116,9 +116,11 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
 
 	$scope.recording = function (on) {
 	    if (on) {
+          $scope.isOn = on;
           geoLocationService.isOn = on;
 	      geoLocationService.start();
 	    } else {
+          $scope.isOn = on;
 	      geoLocationService.stop();
           geoLocationService.isOn = on;
 	    }
