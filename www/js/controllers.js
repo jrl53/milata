@@ -56,7 +56,17 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
                     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                     continuousWorld: true
     			}
-    		}
+    		},
+             mapbox_streets: {
+                    name: 'Mapbox Streets',
+                    url: 'http://api.tiles.mapbox.com/v4/tombatossals.map-fmyyujjl/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidG9tYmF0b3NzYWxzIiwiYSI6Imo3MWxyTHMifQ.TjXg_IV7ZYMHX6tqjMikPg',
+                    type: 'xyz',
+                    options: {
+                        apikey: 'pk.eyJ1IjoidG9tYmF0b3NzYWxzIiwiYSI6Imo3MWxyTHMifQ.TjXg_IV7ZYMHX6tqjMikPg',
+                        mapid: 'tombatossals.map-fmyyujjl'
+                    }
+            }
+             
     	}, 
     	overlays : {
     		buses : {
