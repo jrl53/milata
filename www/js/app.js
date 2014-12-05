@@ -2,15 +2,40 @@
 var MapApp = angular.module('MapApp', [
 	'ionic', 'leaflet-directive', 'firebase']);
 
-MapApp.run(function($ionicPlatform) {
+MapApp.constant('fbURL',"https://boiling-inferno-6943.firebaseio.com");
+MapApp.constant('version', "0.0.3");
+
+MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, version, fbURL) {
   $ionicPlatform.ready(function() {
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
+    //check version
+    var fb = new Firebase(fbURL);
+    fb.child("version").once("value",function(snap){
+    	if (snap.val() != version){
+    		$ionicPopup.alert({
+						     title: 'Version desactualizada',
+						     template: 'Se necesita correr la ultima version del app para poder seguir con el pilot. Favor actualizar desde el Play Store'
+						   });
+    		
+    		$ionicModal.fromTemplateUrl('templates/blockModal.html', {
+			    scope: '',
+			    animation: 'slide-in-up'
+			  }).then(function(modal) {
+			    modal.show();
+			  });
+
+    		console.log("lets close");
+    	} 
+    	else {
+    		//Good version? ok, you can have the Firebase URL
+    		
+    	}
+
+    });
   });
 });
-
-MapApp.constant('fbURL',"https://boiling-inferno-6943.firebaseio.com");
 
 
 /**
