@@ -29,7 +29,7 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, version, fbURL) {
     		console.log("lets close");
     	} 
     	else {
-    		//Good version? ok, you can have the Firebase URL
+    		
     		
     	}
 
@@ -205,6 +205,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	    }
 
 	    fb.child("liveLocs").child(username).remove();
+        
 	}
 
 	service.resume = function() {

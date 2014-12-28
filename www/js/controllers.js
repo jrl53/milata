@@ -9,8 +9,8 @@ MapApp.controller('MainCtrl', ['$scope', function($scope) {
 /**
  * A google map / GPS controller.
  */
-MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocationService', 
-	function($scope, $ionicModal, leafletData, geoLocationService) {
+MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocationService', 'displayPathService', 
+	function($scope, $ionicModal, leafletData, geoLocationService, displayPathService) {
 	
     $scope.allRoutes = geoLocationService.allRoutes;
     $scope.routeData = geoLocationService.routeData;   
@@ -27,7 +27,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     $scope.tiles = {
              mapbox_streets: {
                     name: 'Mapbox Streets',
-                    url: 'http://api.tiles.mapbox.com/v4/tombatossals.map-fmyyujjl/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidG9tYmF0b3NzYWxzIiwiYSI6Imo3MWxyTHMifQ.TjXg_IV7ZYMHX6tqjMikPg',
+                    url: 'http://api.tiles.mapbox.com/v4/jrl53.kk1j4m92/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoianJsNTMiLCJhIjoiTDFXaDdubyJ9.rTD1KwpSkwwrLjoBc1EImw',
                     type: 'xyz'
             }
           };
@@ -46,6 +46,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     	company : '',
     	name : '',
     	email : '',
+        comment: ''
 
     };	    
 
@@ -53,8 +54,8 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     	baselayers : {
     		
              mapbox_streets: {
-                    name: 'Mapbox Streets',
-                    url: 'http://api.tiles.mapbox.com/v4/tombatossals.map-fmyyujjl/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoidG9tYmF0b3NzYWxzIiwiYSI6Imo3MWxyTHMifQ.TjXg_IV7ZYMHX6tqjMikPg',
+                    name: 'Mapbox',
+                    url: 'http://api.tiles.mapbox.com/v4/jrl53.kk1j4m92/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoianJsNTMiLCJhIjoiTDFXaDdubyJ9.rTD1KwpSkwwrLjoBc1EImw',
                     type: 'xyz'
             }
              
@@ -74,7 +75,9 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
     	}
 
     };
-
+        
+    
+    displayPathService.searchPath("CB08");
     
     var updateMarkers = function(){
     	console.log("updating markers");
@@ -122,6 +125,7 @@ MapApp.controller('GpsCtrl', ['$scope','$ionicModal','leafletData', 'geoLocation
           $scope.isOn = on;
 	      geoLocationService.stop();
           geoLocationService.isOn = on;
+          $scope.paths.p1.latlngs = [];
 	    }
 	  };
 
