@@ -6,6 +6,10 @@ MapApp.controller('MainCtrl', ['$scope', function($scope) {
   // do something
 }]);
 
+MapApp.controller('HelpCtrl', ['$scope', function($scope) {
+  // do something
+}]);
+
 /**
  * A google map / GPS controller.
  */
