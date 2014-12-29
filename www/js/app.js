@@ -176,6 +176,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 			userStops = $firebase(sessionRef.child("stops")).$asArray();
 
 		    fb.child("liveLocsData").child(username).update(service.allRoutes[service.routeData.currentRouteId]);
+            fb.child("liveLocsData").child(username).onDisconnect().remove(function(err){
+                console.log("Trying to attach onDisconnect to liveLocs", err);
+            });
+            
 
 		    geoFire.set(username,[position.coords.latitude, position.coords.longitude]).then(function(){
 				console.log("Current user " + username + "'s location has been added to GeoFire");
@@ -205,6 +209,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	    }
 
 	    fb.child("liveLocs").child(username).remove();
+        fb.child("liveLocsData").child(username).remove();
         
 	}
 

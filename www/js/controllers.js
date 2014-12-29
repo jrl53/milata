@@ -113,7 +113,6 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocati
          $scope.filters.center.lat = newPos.coords.latitude;
          $scope.filters.center.lng = newPos.coords.longitude;
 
-    
     }
 
 	$scope.recording = function (on) {
