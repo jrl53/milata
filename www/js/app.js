@@ -5,35 +5,92 @@ var MapApp = angular.module('MapApp', [
 MapApp.constant('fbURL',"https://boiling-inferno-6943.firebaseio.com");
 MapApp.constant('version', "0.0.3");
 
-MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, version, fbURL) {
+MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope, $firebaseAuth, $ionicLoading,
+                     $window, version, fbURL) {
   $ionicPlatform.ready(function() {
     if(window.StatusBar) {
       StatusBar.styleDefault();
     }
-    //check version
+    //check version**********************************************************
     var fb = new Firebase(fbURL);
     fb.child("version").once("value",function(snap){
-    	if (snap.val() != version){
-    		$ionicPopup.alert({
-						     title: 'Version desactualizada',
-						     template: 'Se necesita correr la ultima version del app para poder seguir con el pilot. Favor actualizar desde el Play Store'
-						   });
-    		
-    		$ionicModal.fromTemplateUrl('templates/blockModal.html', {
-			    scope: '',
-			    animation: 'slide-in-up'
-			  }).then(function(modal) {
-			    modal.show();
-			  });
+        if (snap.val() != version){
+            $ionicPopup.alert({
+                             title: 'Version desactualizada',
+                             template: 'Se necesita correr la ultima version del app para poder seguir con el pilot. Favor actualizar desde el Play Store'
+                           });
 
-    		console.log("lets close");
-    	} 
-    	else {
-    		
-    		
-    	}
+            $ionicModal.fromTemplateUrl('templates/blockModal.html', {
+                scope: '',
+                animation: 'slide-in-up'
+              }).then(function(modal) {
+                modal.show();
+              });
 
+            console.log("lets close");
+        } 
     });
+    //Authentication*************************************************************************
+    
+    
+      
+    $rootScope.uid = {};  
+    $rootScope.auth = $firebaseAuth(fb);
+    
+    //Set listener*****
+    $rootScope.auth.$onAuth(function(authData){
+        if(authData){
+            console.log("Saving user in fb", authData);
+            fb.child("users").child(authData.uid).update(authData);
+            $rootScope.uid = authData.uid;
+            $state.go('menu.home');
+        }
+        else {
+            console.log("not authorizing right now");
+            $state.go('auth.signin');
+        }
+    });
+    
+    $rootScope.logout = function() {
+            console.log("logging out...");
+            $rootScope.auth.$unauth();
+            $rootScope.uid = {};
+        };
+      
+    $rootScope.checkSession = function(){
+        var authData = $rootScope.auth.$getAuth();
+        if (authData){
+            console.log("Already logged in.. rerouting to main");
+        }
+        else {
+            console.log("Not logged in.. redirecting to login page");
+        }
+    };
+      
+      
+    //display helpers*********************************************************  
+    $rootScope.show = function(text) {
+        $rootScope.loading = $ionicLoading.show({
+                template: text ? text : 'Loading..',
+                animation: 'fade-in',
+                showBackdrop: true,
+                maxWidth: 200,
+                showDelay: 0
+            });
+    };
+
+    $rootScope.hide = function() {
+        $ionicLoading.hide();
+    };
+
+    $rootScope.notify = function(text) {
+        $rootScope.show(text);
+        $window.setTimeout(function() {
+            $rootScope.hide();
+        }, 1999);
+    };
+
+      
   });
 });
 
@@ -41,15 +98,43 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, version, fbURL) {
 /**
  * Routing table including associated controllers.
  */
-MapApp.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+MapApp.config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', function($stateProvider, $urlRouterProvider, $ionicConfigProvider) {
 	$stateProvider
 		.state('menu', {url: "/map", abstract: true, templateUrl: "templates/menu.html"})
-		.state('menu.home', {url: '/home', views:	 {'menuContent': {templateUrl: 'gpsView.html', controller: 'GpsCtrl'} }  })
+		.state('menu.home', {url: '/home', views:	 {'menuContent': {templateUrl: 'templates/gpsView.html', controller: 'GpsCtrl'} }  })
 		.state('menu.help', {url: '/help', views: {'menuContent': {templateUrl: 'helpView.html', controller: 'HelpCtrl'} }  })
-		.state('menu.form', {url: '/form', views: {'menuContent': {templateUrl: 'templates/search.html', controller: 'HelpCtrl'} }  });
+		.state('menu.form', {url: '/form', views: {'menuContent': {templateUrl: 'templates/search.html', controller: 'HelpCtrl'} }  })
+        .state('auth', {
+            url: "/auth",
+            abstract: true,
+            templateUrl: "templates/auth.html"
+        })
+        .state('auth.signin', {
+            url: '/signin',
+            views: {
+                'auth-signin': {
+                    templateUrl: 'templates/auth-signin.html',
+                    controller: 'SignInCtrl'
+                }
+            }
+        })
+        .state('auth.signup', {
+            url: '/signup',
+            views: {
+                'auth-signup': {
+                    templateUrl: 'templates/auth-signup.html',
+                    controller: 'SignUpCtrl'
+                }
+            }
+        })
+    ;
 
 	// if none of the above states are matched, use this as the fallback
 	$urlRouterProvider.otherwise('/map/home');
+    
+    //Set bottom tabs for Android
+    $ionicConfigProvider.tabs.position('bottom');
+    
 }]);
 
 /**
@@ -62,6 +147,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	//Globals
 	
 	var username = generateRandomString(5);
+    
 	//-------------------
 
 	var service = {};

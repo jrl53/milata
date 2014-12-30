@@ -14,21 +14,28 @@
     <ion-nav-view name="menuContent" animation="slide-left-right"></ion-nav-view>
   </ion-side-menu-content>
 
-  <ion-side-menu side="left">
+  <ion-side-menu side="left" ng-controller="LeftMenuCtrl">
     <header class="bar bar-header bar-stable">
       <h1 class="title">Menu</h1>
     </header>
     <ion-content class="has-header">
       <ion-list>
+        <ion-item class="item-avatar" type="item-text-wrap" href="">
+        <img ng-src="../img/milata_icon_512.png">
+        <h2>{{uid}}</h2>
+      </ion-item>  
         <ion-item nav-clear menu-close href="#/map/home">
           Mapa
         </ion-item>
         <ion-item nav-clear menu-close href="#/map/help">
           Sobre Nosotros
         </ion-item>
-   <!--   <div class="item item-divider">
-              Options
-      </div> -->
+          
+      <div class="item item-divider">
+      </div>
+          <ion-item nav-clear menu-close ng-click="logout()">
+          Logout
+        </ion-item>
 
 
       </ion-list>

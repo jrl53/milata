@@ -1,0 +1,25 @@
+<ion-view title="MiLata - Mapa">
+			
+			<ion-content scroll="false" class="has-header">
+			
+			
+			<!-- map directive-->
+			
+			<leaflet center="filters.center" paths="paths" markers="markers" tiles="tiles" layers="layers" width="100%" height="110%" data-tap-disabled="true"> </leaflet>
+			
+			</ion-content>
+
+			<ion-footer-bar align-title="left" class="bar-energized" >
+			  <div class="buttons">
+				<button class="button" ng-click="routeModal.show()" ng-show="!isOn">Estoy en un bus</button>
+			  </div>
+			  <div class="buttons">
+				<button class="button" ng-click="submitModal.show()" ng-show="isOn"> Me baje del bus  </button>
+			  </div>
+			  
+              <div class="buttons" ng-click="addStop()" ng-show="isOn" >
+                <button class="button">Add Stop</button>
+              </div>    
+			</ion-footer-bar>
+
+			</ion-view>
