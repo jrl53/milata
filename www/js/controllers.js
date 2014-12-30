@@ -15,7 +15,8 @@ MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scop
     
     $scope.user = {
         email: "",
-        password: ""
+        password: "",
+        name: ""
     };
     $scope.validateUser = function() {
         $rootScope.show('Please wait.. Authenticating');
@@ -54,12 +55,14 @@ MapApp.controller('SignUpCtrl', [
 
         $scope.user = {
             email: "",
-            password: ""
+            password: "",
+            name: ""
         };
         $scope.createUser = function() {
             var email = this.user.email;
             var password = this.user.password;
-            if (!email || !password) {
+            var name = this.user.name;
+            if (!email || !password || !name) {
                 $rootScope.notify("Please enter valid credentials");
                 return false;
             }
@@ -73,7 +76,8 @@ MapApp.controller('SignUpCtrl', [
                     password: password}
                 );
             }).then(function(authData){
-                console.log("Created/logged in");
+                console.log("Created/logged in.. Saving name");
+                $rootScope.mainFb.child("users").child(authData.uid).update({name: name});
             }).catch(function(error){
                 console.log("Error while creating/logging in", error);
                 if (error.code == 'INVALID_EMAIL') {
@@ -89,7 +93,7 @@ MapApp.controller('SignUpCtrl', [
 ]);
 
 MapApp.controller('LeftMenuCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
-    $scope.uid = $rootScope.uid;
+    $scope.authData = $rootScope.authData;
     $scope.logout = function(){
         $rootScope.logout();
     };

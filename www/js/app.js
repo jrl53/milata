@@ -13,6 +13,7 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
     }
     //check version**********************************************************
     var fb = new Firebase(fbURL);
+    $rootScope.mainFb = fb;
     fb.child("version").once("value",function(snap){
         if (snap.val() != version){
             $ionicPopup.alert({
@@ -42,7 +43,7 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
         if(authData){
             console.log("Saving user in fb", authData);
             fb.child("users").child(authData.uid).update(authData);
-            $rootScope.uid = authData.uid;
+            $rootScope.authData = authData;
             $state.go('menu.home');
         }
         else {
@@ -54,19 +55,18 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
     $rootScope.logout = function() {
             console.log("logging out...");
             $rootScope.auth.$unauth();
-            $rootScope.uid = {};
+            $rootScope.authData = {};
         };
       
     $rootScope.checkSession = function(){
         var authData = $rootScope.auth.$getAuth();
         if (authData){
-            console.log("Already logged in.. rerouting to main");
+            console.log("Already logged in.. rerouting to main", authData);
         }
         else {
             console.log("Not logged in.. redirecting to login page");
         }
     };
-      
       
     //display helpers*********************************************************  
     $rootScope.show = function(text) {
@@ -130,7 +130,7 @@ MapApp.config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', f
     ;
 
 	// if none of the above states are matched, use this as the fallback
-	$urlRouterProvider.otherwise('/map/home');
+	$urlRouterProvider.otherwise('/auth/signin');
     
     //Set bottom tabs for Android
     $ionicConfigProvider.tabs.position('bottom');
