@@ -1,9 +1,7 @@
 <ion-header-bar class="bar-positive">
    <h1 class="title">Ingreso</h1>
 </ion-header-bar>
-<ion-content class="has-header padding">
-  
-  
+<ion-content class="has-header">
    <div class="list">
     <form name="loginFrm" ng-submit="logWithPass()"> 
       <label class="item item-input">
@@ -14,17 +12,15 @@
         <span class="input-label">Contraseña</span>
         <input type="password" ng-model="user.password">
       </label>
-      <label class="item item-input">
-        <button class="button button-block button-positive" type="submit" ng-disabled="loginFrm.$invalid || !user.email || !user.password">Ingresar</button>
+      <label >
+        <button class="button btn-auth btn-github large" type="submit" ng-disabled="loginFrm.$invalid || !user.email || !user.password">Ingresar con email</button>
       </label>
        
    </form>
     </div>
     
-    <div class="list">
-      <label class="item item-input">
-        <button class="btn-auth btn-facebook large" ng-click="logWithFacebook()">Facebook</button>  
-      </label>
+    <button class="button btn-auth btn-facebook large" ng-click="logWithFacebook()">Ingresar con <b>Facebook</b></button>  
+      
     </div>
     
 </ion-content>

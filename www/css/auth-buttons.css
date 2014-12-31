@@ -176,22 +176,26 @@
 .btn-github:before {
     margin: 0 0.6em 0 -0.6em;
     background-position: -44px 0;
+    background-image: none;
 }
 
 .btn-github:hover:before,
 .btn-github:focus:before,
 .btn-github:active:before {
     background-position: -66px 0;
+    background-image: none;
 }
 
 .btn-github.large:before {
     background-position: -72px -22px;
+    background-image: none;
 }
 
 .btn-github.large:hover:before,
 .btn-github.large:focus:before,
 .btn-github.large:active:before {
     background-position: -108px -22px;
+    background-image: none;
 }
 
 
