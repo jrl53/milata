@@ -48,8 +48,8 @@ MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scop
     }
     
     $scope.logWithFacebook = function() {
-        $rootScope.auth.$authWithOAuthPopup('facebook').then(function(authData){
-            
+        $rootScope.auth.$authWithOAuthPopup('facebook',{scope: "email"}).then(function(authData){
+            console.log("Logged in with Facebook");
         })
     };
 
