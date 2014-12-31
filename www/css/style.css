@@ -1,4 +1,14 @@
+.btn-auth{
+    display:block;
+    clear:both;
+    width:80%;
+    margin:15px auto;
+}
 
+ion-content.login{
+    background: url("../img/sunset.jpg") center center no-repeat;
+    background-size: cover;
+}
 
 .bar-milata {
 color: #FF9F00;
