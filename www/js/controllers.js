@@ -19,11 +19,11 @@ MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scop
         name: ""
     };
     $scope.logWithPass = function() {
-        $rootScope.show('Please wait.. Authenticating');
+        $rootScope.show('Ingresando...');
         var email = this.user.email;
         var password = this.user.password;
         if (!email || !password) {
-            $rootScope.notify("Please enter valid credentials");
+            $rootScope.notify("Favor complete los campos");
             return false;
         }
 
@@ -36,13 +36,13 @@ MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scop
         }, function(error) {
             $rootScope.hide();
             if (error.code == 'INVALID_EMAIL') {
-                $rootScope.notify('Invalid Email Address');
+                $rootScope.notify('Email incorrecto');
             } else if (error.code == 'INVALID_PASSWORD') {
-                $rootScope.notify('Invalid Password');
+                $rootScope.notify('Contraseña incorrecta');
             } else if (error.code == 'INVALID_USER') {
-                $rootScope.notify('Invalid User');
+                $rootScope.notify('Usuario incorrecto');
             } else {
-                $rootScope.notify('Oops something went wrong. Please try again later');
+                $rootScope.notify('Oops, hay un problema. Favor avisarle a Chino');
             }
         });
     }
@@ -69,14 +69,14 @@ MapApp.controller('SignUpCtrl', [
             var password = this.user.password;
             var name = this.user.name;
             if (!email || !password || !name) {
-                $rootScope.notify("Please enter valid credentials");
+                $rootScope.notify("Favor complete los campos");
                 return false;
             }
-            $rootScope.show('Please wait.. Registering');
+            $rootScope.show('Registrando...');
 
             $rootScope.auth.$createUser(email, password).then(function() {
                 $rootScope.hide();
-                $rootScope.notify("User created successfully");
+                $rootScope.notify("Usuario creado");
                 return $rootScope.auth.$authWithPassword({
                     email: email,
                     password: password}
@@ -87,11 +87,11 @@ MapApp.controller('SignUpCtrl', [
             }).catch(function(error){
                 console.log("Error while creating/logging in", error);
                 if (error.code == 'INVALID_EMAIL') {
-                        $rootScope.notify('Invalid Email Address');
+                        $rootScope.notify('Email incorrecto');
                     } else if (error.code == 'EMAIL_TAKEN') {
-                        $rootScope.notify('Email Address already taken');
+                        $rootScope.notify('Email existente. Intente otro');
                     } else {
-                        $rootScope.notify('Oops something went wrong. Please try again later');
+                        $rootScope.notify('Oops algo anda mal. Favor llamar a Chino');
                     }
             });
         }
