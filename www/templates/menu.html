@@ -14,15 +14,15 @@
     <ion-nav-view name="menuContent" animation="slide-left-right"></ion-nav-view>
   </ion-side-menu-content>
 
-  <ion-side-menu side="left" ng-controller="LeftMenuCtrl">
-    <header class="bar bar-header bar-stable">
+  <ion-side-menu side="left" class="dark-bg" ng-controller="LeftMenuCtrl">
+    <header class="bar bar-header bar-dark">
       <h1 class="title">Menu</h1>
     </header>
     <ion-content class="has-header">
       <ion-list>
-        <ion-item nav-clear menu-close class="item-avatar" type="item-text-wrap" href="#/map/profile">
+        <ion-item nav-clear menu-close class="item item-avatar" type="item-text-wrap" href="#/map/profile">
              <img ng-src= "{{uSession.userData.pic_url}}">
-             <h2>{{uSession.userData.name}}</h2>
+             {{uSession.userData.name}}
              <p>Ver perfil</p>
       </ion-item>  
         <ion-item nav-clear menu-close href="#/map/home">
