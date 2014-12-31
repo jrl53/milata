@@ -14,6 +14,10 @@
     color: #F0F1F1;
 }
 
+.menu-left .item-divider {
+    background-color: #565656 ;
+}
+
 .menu-left .item-complex .item-content, .menu-left .item-radio .item-content {
     background-color: transparent;
 }
