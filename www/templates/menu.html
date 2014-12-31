@@ -22,7 +22,7 @@
       <ion-list>
         <ion-item ng-switch="uSession.authData.provider" class="item-avatar" type="item-text-wrap" href="">
          
-             <img ng-switch-when="password" src= "http://www.milatacr.com/www/img/milata_icon_512.png">
+             <img ng-switch-when="password" src= "http://www.milatacr.com/www/img/anon.png">
              <img ng-switch-when="facebook" ng-src="{{uSession.authData.facebook.cachedUserProfile.picture.data.url}}">
              <h2 ng-switch-when="password">{{uSession.userData.name}}</h2>
              <h2 ng-switch-when="facebook">{{uSession.authData.facebook.displayName}}</h2>
