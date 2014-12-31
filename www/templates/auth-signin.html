@@ -2,19 +2,19 @@
    <h1 class="title">Sign In</h1>
 </ion-header-bar>
 <ion-content class="has-header padding">
+  <form ng-submit="validateUser()">
    <div class="list">
       <label class="item item-input">
-      <span class="input-label">Email</span>
-      <input type="email" ng-model="user.email">
+        <span class="input-label">Email</span>
+        <input type="email" ng-model="user.email">
       </label>
       <label class="item item-input">
-      <span class="input-label">Contraseña</span>
-      <input type="password" ng-model="user.password">
+        <span class="input-label">Contraseña</span>
+        <input type="password" ng-model="user.password">
       </label>
       <label class="item item-input">
-      <button class="button button-block button-positive" ng-click="validateUser()">
-      Sign In
-      </button>
+        <button class="button button-block button-positive" type="submit">Sign In</button>
       </label>
-  
+    </div>
+   </form>
 </ion-content>
