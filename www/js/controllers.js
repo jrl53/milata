@@ -2,8 +2,14 @@
 /**
  * MAIN CONTROLLER - handle inapp browser
  */
+
 MapApp.controller('MainCtrl', ['$scope', function($scope) {
   // do something
+}]);
+
+MapApp.controller('ProfileCtrl', ['$scope', 'userSession', function($scope, userSession) {
+    $scope.uS = userSession;
+    
 }]);
 
 MapApp.controller('HelpCtrl', ['$scope', function($scope) {

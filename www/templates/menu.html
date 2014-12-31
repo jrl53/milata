@@ -20,15 +20,9 @@
     </header>
     <ion-content class="has-header">
       <ion-list>
-        <ion-item ng-switch="uSession.authData.provider" class="item-avatar" type="item-text-wrap" href="">
-         
-             <img ng-switch-when="password" src= "http://www.milatacr.com/www/img/anon.png">
-             <img ng-switch-when="facebook" ng-src="{{uSession.authData.facebook.cachedUserProfile.picture.data.url}}">
-             <img ng-switch-when="twitter" ng-src="{{uSession.authData.twitter.cachedUserProfile.profile_image_url}}">
-             <h2 ng-switch-when="password">{{uSession.userData.name}}</h2>
-             <h2 ng-switch-when="facebook">{{uSession.authData.facebook.displayName}}</h2>
-             <h2 ng-switch-when="twitter">{{uSession.authData.twitter.displayName}}</h2>
-           
+        <ion-item nav-clear menu-close class="item-avatar" type="item-text-wrap" href="#/map/profile">
+             <img ng-src= "{{uSession.userData.pic_url}}">
+             <h2>{{uSession.userData.name}}</h2>
       </ion-item>  
         <ion-item nav-clear menu-close href="#/map/home">
           Mapa

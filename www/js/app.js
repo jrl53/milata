@@ -48,6 +48,27 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
         if(authData){
             console.log("Saving user in fb", authData);
             fb.child("users").child(authData.uid).update(authData);
+            var dataFb = fb.child("users").child(authData.uid).child("data");
+            //set name and picture
+            switch(authData.provider){
+                case 'facebook':
+                    dataFb.update({
+                        name: authData.facebook.displayName,
+                        pic_url: authData.facebook.cachedUserProfile.picture.data.url
+                    });
+                    break;
+                case 'twitter':
+                    dataFb.update({
+                        name: authData.twitter.displayName,
+                        pic_url: authData.twitter.cachedUserProfile.profile_image_url
+                    });
+                    break;
+                case 'password':
+                    dataFb.update({
+                        pic_url: "http://www.milatacr.com/www/img/milata_icon_512.png"
+                    });
+                    break;
+            }
             
             userSession.authData = authData;
             userSession.userData = $firebase(fb.child("users").child(authData.uid).child("data")).$asObject();
@@ -113,7 +134,7 @@ MapApp.config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', f
 		.state('menu', {url: "/map", abstract: true, templateUrl: "templates/menu.html"})
 		.state('menu.home', {url: '/home', views:	 {'menuContent': {templateUrl: 'templates/gpsView.html', controller: 'GpsCtrl'} }  })
 		.state('menu.help', {url: '/help', views: {'menuContent': {templateUrl: 'helpView.html', controller: 'HelpCtrl'} }  })
-		.state('menu.form', {url: '/form', views: {'menuContent': {templateUrl: 'templates/search.html', controller: 'HelpCtrl'} }  })
+		.state('menu.profile', {url: '/profile', views: {'menuContent': {templateUrl: 'templates/profile.html', controller: 'ProfileCtrl'} }  })
         .state('auth', {
             url: "/auth",
             abstract: true,
