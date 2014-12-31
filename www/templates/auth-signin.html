@@ -2,7 +2,7 @@
    <h1 class="title">Sign In</h1>
 </ion-header-bar>
 <ion-content class="has-header padding">
-  <form ng-submit="validateUser()">
+  <form ng-submit="logWithPass()">
    <div class="list">
       <label class="item item-input">
         <span class="input-label">Email</span>
@@ -13,8 +13,15 @@
         <input type="password" ng-model="user.password">
       </label>
       <label class="item item-input">
-        <button class="button button-block button-positive" type="submit">Sign In</button>
+        <button class="button button-block button-positive" type="submit">Log In</button>
       </label>
     </div>
    </form>
+    
+    <div class="list">
+      <label class="item item-input">
+        <button class="button button-block button-positive" ng-click="logWithFacebook()">Facebook</button>  
+      </label>
+    </div>
+    
 </ion-content>

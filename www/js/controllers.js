@@ -18,7 +18,7 @@ MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scop
         password: "",
         name: ""
     };
-    $scope.validateUser = function() {
+    $scope.logWithPass = function() {
         $rootScope.show('Please wait.. Authenticating');
         var email = this.user.email;
         var password = this.user.password;
@@ -46,6 +46,12 @@ MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scop
             }
         });
     }
+    
+    $scope.logWithFacebook = function() {
+        $rootScope.auth.$authWithOAuthPopup('facebook').then(function(authData){
+            
+        })
+    };
 
 }]);
 
