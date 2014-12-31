@@ -77,7 +77,7 @@ MapApp.controller('SignUpCtrl', [
                 );
             }).then(function(authData){
                 console.log("Created/logged in.. Saving name");
-                $rootScope.mainFb.child("users").child(authData.uid).update({name: name});
+                $rootScope.mainFb.child("users").child(authData.uid).child("data").update({name: name});
             }).catch(function(error){
                 console.log("Error while creating/logging in", error);
                 if (error.code == 'INVALID_EMAIL') {

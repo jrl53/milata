@@ -7,7 +7,7 @@ MapApp.constant('version', "0.0.3");
 
 MapApp.value('userSession', {});
 
-MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope, $firebaseAuth, $ionicLoading,
+MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope, $firebaseAuth, $firebase, $ionicLoading,
                      $window, version, fbURL, userSession) {
   $ionicPlatform.ready(function() {
     if(window.StatusBar) {
@@ -15,7 +15,10 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
     }
     //check version**********************************************************
     var fb = new Firebase(fbURL);
+  
     $rootScope.mainFb = fb;
+      
+      
     fb.child("version").once("value",function(snap){
         if (snap.val() != version){
             $ionicPopup.alert({
@@ -47,6 +50,7 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
             fb.child("users").child(authData.uid).update(authData);
             
             userSession.authData = authData;
+            userSession.userData = $firebase(fb.child("users").child(authData.uid).child("data")).$asObject();
             //$rootScope.authData = authData;
             $state.go('menu.home');
         }
@@ -147,13 +151,14 @@ MapApp.config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', f
 * Geolocation service.
 */
 
-MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
+MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL, userSession) {
 //	'use strict';
 	
 	//Globals
 	
-	var username = generateRandomString(5);
+	var uS = userSession;
     
+   // var username = uS.authData.uid;
 	//-------------------
 
 	var service = {};
@@ -231,7 +236,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 			};
 			service.latLngs.$add(toPush);
 
-			geoFire.set(username,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function(){
+			geoFire.set(userSession.authData.uid,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function(){
 				console.log("Setting new position in geoFire");
 			      
 			  }).catch(function(error){
@@ -258,7 +263,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 		    //Get the unique id object reference from Firebase
 		    sessionRef = fb.child("routes").child(service.routeData.currentRouteId).push({
 		    	created: Firebase.ServerValue.TIMESTAMP,
-		    	username: username,
+		    	username: userSession.authData.uid,
 		    	routeID: service.routeData.currentRouteId
 		    });	
 
@@ -267,17 +272,19 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 			service.latLngs = sync.$asArray();
 			userStops = $firebase(sessionRef.child("stops")).$asArray();
 
-		    fb.child("liveLocsData").child(username).update(service.allRoutes[service.routeData.currentRouteId]);
-            fb.child("liveLocsData").child(username).onDisconnect().remove(function(err){
+		    fb.child("liveLocsData").child(userSession.authData.uid)
+                .update(service.allRoutes[service.routeData.currentRouteId]);
+            
+            fb.child("liveLocsData").child(userSession.authData.uid).onDisconnect().remove(function(err){
                 console.log("Trying to attach onDisconnect to liveLocs", err);
             });
             
 
-		    geoFire.set(username,[position.coords.latitude, position.coords.longitude]).then(function(){
-				console.log("Current user " + username + "'s location has been added to GeoFire");
+		    geoFire.set(userSession.authData.uid,[position.coords.latitude, position.coords.longitude]).then(function(){
+				console.log("Current user " + userSession.authData.uid + "'s location has been added to GeoFire");
 			      // When the user disconnects from Firebase (e.g. closes the app, exits the browser),
 			      // remove their GeoFire entry
-			      fb.child("liveLocs").child(username).onDisconnect().remove();
+			      fb.child("liveLocs").child(userSession.authData.uid).onDisconnect().remove();
 			      
 			      
 			  }).catch(function(error){
@@ -300,8 +307,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	       navigator.geolocation.clearWatch(watchId);
 	    }
 
-	    fb.child("liveLocs").child(username).remove();
-        fb.child("liveLocsData").child(username).remove();
+	    fb.child("liveLocs").child(userSession.authData.uid).remove();
+        fb.child("liveLocsData").child(userSession.authData.uid).remove();
         
 	}
 
