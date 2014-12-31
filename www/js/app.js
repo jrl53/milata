@@ -5,8 +5,10 @@ var MapApp = angular.module('MapApp', [
 MapApp.constant('fbURL',"https://boiling-inferno-6943.firebaseio.com");
 MapApp.constant('version', "0.0.3");
 
+MapApp.value('userSession', {});
+
 MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope, $firebaseAuth, $ionicLoading,
-                     $window, version, fbURL) {
+                     $window, version, fbURL, userSession) {
   $ionicPlatform.ready(function() {
     if(window.StatusBar) {
       StatusBar.styleDefault();
@@ -43,7 +45,9 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
         if(authData){
             console.log("Saving user in fb", authData);
             fb.child("users").child(authData.uid).update(authData);
-            $rootScope.authData = authData;
+            
+            userSession.authData = authData;
+            //$rootScope.authData = authData;
             $state.go('menu.home');
         }
         else {
@@ -53,10 +57,12 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
     });
     
     $rootScope.logout = function() {
-            console.log("logging out...");
-            $rootScope.auth.$unauth();
-            $rootScope.authData = {};
-        };
+        console.log("logging out...");
+        $rootScope.auth.$unauth();
+
+        userSession.authData = {};
+        //$rootScope.authData = {};
+    };
       
     $rootScope.checkSession = function(){
         var authData = $rootScope.auth.$getAuth();
@@ -203,7 +209,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL) {
 	    });
   	};
 
-	
+	//Retrieve all routs from FB***************************
 	service.allRoutes = $firebase(fb.child("allRoutes")).$asObject();
 	console.log(service.allRoutes);
 

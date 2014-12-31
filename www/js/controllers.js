@@ -92,8 +92,10 @@ MapApp.controller('SignUpCtrl', [
     }
 ]);
 
-MapApp.controller('LeftMenuCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
-    $scope.authData = $rootScope.authData;
+MapApp.controller('LeftMenuCtrl', ['$scope', '$rootScope', 'userSession', function($scope, $rootScope, userSession) {
+    //$scope.authData = $rootScope.authData;
+    $scope.uSession = userSession;
+    console.log("in LeftMenuCtrl... authData: ", $scope.uSession.authData);
     $scope.logout = function(){
         $rootScope.logout();
     };
