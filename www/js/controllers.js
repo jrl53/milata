@@ -52,6 +52,12 @@ MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scop
             console.log("Logged in with Facebook");
         })
     };
+    
+    $scope.logWithTwitter = function() {
+        $rootScope.auth.$authWithOAuthPopup('twitter').then(function(authData){
+            console.log("Logged in with Twitter");
+        })
+    };
 
 }]);
 
