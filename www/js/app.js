@@ -74,7 +74,7 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
             userSession.userData = $firebase(fb.child("users").child(authData.uid).child("data")).$asObject();
             //$rootScope.authData = authData;
             console.log("trying to go to home");
-            $state.go('menu.home');
+            $state.go('menu.help');
         }
         else {
             console.log("not authorizing right now");
