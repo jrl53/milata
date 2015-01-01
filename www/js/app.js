@@ -94,6 +94,7 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
         var authData = $rootScope.auth.$getAuth();
         if (authData){
             console.log("Already logged in.. rerouting to main", authData);
+            $state.go("menu.home");
         }
         else {
             console.log("Not logged in.. redirecting to login page");
