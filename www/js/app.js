@@ -68,11 +68,12 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope
                         pic_url: "http://www.milatacr.com/www/img/milata_icon_512.png"
                     });
                     break;
-            }
+            };
             
             userSession.authData = authData;
             userSession.userData = $firebase(fb.child("users").child(authData.uid).child("data")).$asObject();
             //$rootScope.authData = authData;
+            console.log("trying to go to home");
             $state.go('menu.home');
         }
         else {
