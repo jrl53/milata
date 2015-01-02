@@ -167,6 +167,7 @@ MapApp.config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', f
     
     //Set bottom tabs for Android
     $ionicConfigProvider.tabs.position('bottom');
+    $ionicConfigProvider.navBar.alignTitle('center');
     
 }]);
 
