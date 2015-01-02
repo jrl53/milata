@@ -3,6 +3,8 @@
  * MAIN CONTROLLER - handle inapp browser
  */
 
+
+
 MapApp.controller('MainCtrl', ['$scope', function($scope) {
   // do something
 }]);
@@ -16,7 +18,47 @@ MapApp.controller('HelpCtrl', ['$scope', function($scope) {
   // do something
 }]);
 
-MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scope, $rootScope, fbURL) {
+MapApp.controller('RouteSearchCtrl', ['$scope', function($scope) {
+  $scope.jsonRoutes = {
+  "CB00" : {
+    "color" : "green",
+    "id" : "CB00",
+    "name" : "San Pedro"
+  },
+  "CB009" : {
+    "color" : "orange",
+    "id" : "CB009",
+    "name" : "prueba"
+  },
+  "CB01" : {
+    "color" : "red",
+    "id" : "CB01",
+    "name" : "Heredia/Alajuela"
+  },
+  "CB05" : {
+    "color" : "darkpurple",
+    "id" : "CB05",
+    "name" : "Alajuela"
+  },
+  "CB06" : {
+    "color" : "purple",
+    "id" : "CB06",
+    "name" : "Santa Ana/Escazu"
+  },
+  "CB07" : {
+    "color" : "blue",
+    "id" : "CB07",
+    "name" : "Zapote"
+  },
+  "CB08" : {
+    "color" : "orange",
+    "id" : "CB08",
+    "name" : "Cartago"
+  }
+  };
+}]);
+
+MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scope, $rootScope,  fbURL) {
     var fb = new Firebase(fbURL);
     
     $rootScope.checkSession();
@@ -56,17 +98,11 @@ MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scop
     }
     
     $scope.logWithFacebook = function() {
-        fb.authWithOAuthPopup('facebook',function(error, authData){
-            if(error) alert(error);
-            else console.log("logging with fb success");
-        },{scope: "email"});
+        simpleLog.$login('facebook');
     };
     
     $scope.logWithTwitter = function() {
-        fb.authWithOAuthPopup('twitter',function(error, authData){
-            if(error) alert(error);
-            else console.log("logging with twitter success");
-        });
+        simpleLog.$login('twitter');
     };
 
 }]);
