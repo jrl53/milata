@@ -17,7 +17,7 @@
     <param name="ios-package" value="CDVStatusBar" onload="true"/>
   </feature>
 <platform name="android">
-    <icon src="icons/android/milata_icon_512.png"/>
+    <icon src="icons/android/milata_icon_orange.png"/>
 </platform>
 </widget>
 

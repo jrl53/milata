@@ -17,6 +17,8 @@ MapApp.controller('HelpCtrl', ['$scope', function($scope) {
 }]);
 
 MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scope, $rootScope, fbURL) {
+    var fb = new Firebase(fbURL);
+    
     $rootScope.checkSession();
     
     $scope.user = {
@@ -54,15 +56,17 @@ MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scop
     }
     
     $scope.logWithFacebook = function() {
-        $rootScope.auth.$authWithOAuthPopup('facebook',{scope: "email"}).then(function(authData){
-            console.log("Logged in with Facebook");
-        })
+        fb.authWithOAuthPopup('facebook',function(error, authData){
+            if(error) alert(error);
+            else console.log("logging with fb success");
+        },{scope: "email"});
     };
     
     $scope.logWithTwitter = function() {
-        $rootScope.auth.$authWithOAuthPopup('twitter').then(function(authData){
-            console.log("Logged in with Twitter");
-        })
+        fb.authWithOAuthPopup('twitter',function(error, authData){
+            if(error) alert(error);
+            else console.log("logging with twitter success");
+        });
     };
 
 }]);
