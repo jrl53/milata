@@ -23,6 +23,21 @@ MapApp.controller('RouteSearchCtrl', ['$scope', function($scope) {
     $scope.clearFilter = function(){
         $scope.searchString = '';
     };
+    
+    $scope.jsonRoutes = 
+  [{
+    "color" : "green",
+    "id" : "CB00",
+    "name" : "San Pedro"
+  },
+  {
+    "color" : "orange",
+    "id" : "CB009",
+    "name" : "Arueba"
+  }]
+
+
+    
 }]);
 
 MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scope, $rootScope,  fbURL) {
