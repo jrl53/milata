@@ -11,12 +11,15 @@
         <i class="icon ion-ios7-search placeholder-icon"></i>
         <input type="text" placeholder="Buscar" ng-model="searchString">
       </label>    
+      <button class="button button-clear" ng-if="searchString" ng-click="clearFilter()">
+            <i class="icon ion-ios7-close"></i>
+      </button>
     </ion-header-bar>
         
     <ion-content class="has-header"  >
      
          <ion-list>
-          <ion-radio ng-repeat="route in jsonRoutes | searchFor:searchString" ng-model="routeData.currentRouteId" ng-value="route.id">{{route.name}}</ion-radio>
+          <ion-radio ng-repeat="route in allRoutes | searchFor:searchString" ng-model="routeData.currentRouteId" ng-value="route.id">{{route.name}}</ion-radio>
       
 
       </ion-list>

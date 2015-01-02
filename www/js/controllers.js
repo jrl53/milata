@@ -19,43 +19,10 @@ MapApp.controller('HelpCtrl', ['$scope', function($scope) {
 }]);
 
 MapApp.controller('RouteSearchCtrl', ['$scope', function($scope) {
-  $scope.jsonRoutes = {
-  "CB00" : {
-    "color" : "green",
-    "id" : "CB00",
-    "name" : "San Pedro"
-  },
-  "CB009" : {
-    "color" : "orange",
-    "id" : "CB009",
-    "name" : "prueba"
-  },
-  "CB01" : {
-    "color" : "red",
-    "id" : "CB01",
-    "name" : "Heredia/Alajuela"
-  },
-  "CB05" : {
-    "color" : "darkpurple",
-    "id" : "CB05",
-    "name" : "Alajuela"
-  },
-  "CB06" : {
-    "color" : "purple",
-    "id" : "CB06",
-    "name" : "Santa Ana/Escazu"
-  },
-  "CB07" : {
-    "color" : "blue",
-    "id" : "CB07",
-    "name" : "Zapote"
-  },
-  "CB08" : {
-    "color" : "orange",
-    "id" : "CB08",
-    "name" : "Cartago"
-  }
-  };
+    $scope.searchString = '';
+    $scope.clearFilter = function(){
+        $scope.searchString = '';
+    };
 }]);
 
 MapApp.controller('SignInCtrl', ['$scope', '$rootScope', 'fbURL', function($scope, $rootScope,  fbURL) {
