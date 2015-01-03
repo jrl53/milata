@@ -287,7 +287,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL, us
 			maximumAge: 60000,
 			timeout: 15000
 		})
-        },5000);
+        },15000);
 	};
 
 	service.start = function () {
