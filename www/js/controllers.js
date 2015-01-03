@@ -18,7 +18,8 @@ MapApp.controller('HelpCtrl', ['$scope', function($scope) {
   // do something
 }]);
 
-MapApp.controller('RouteSearchCtrl', ['$scope', function($scope) {
+MapApp.controller('RouteSearchCtrl', ['$scope', '$firebase','fbURL', function($scope, $firebase, fbURL) {
+    $scope.allRoutesArray = $firebase(new Firebase(fbURL).child("allRoutes")).$asArray();
     $scope.searchString = '';
     $scope.clearFilter = function(){
         $scope.searchString = '';

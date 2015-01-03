@@ -239,7 +239,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL, us
   	};
 
 	//Retrieve all routs from FB***************************
-	service.allRoutes = $firebase(fb.child("allRoutes")).$asArray();
+	service.allRoutes = $firebase(fb.child("allRoutes")).$asObject();
 	console.log(service.allRoutes);
 
 	var onChangeError = function (error) {
