@@ -249,7 +249,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL, us
 	var onChange = function(newPosition) {
 
 		var now = new Date().getTime();
-		if (ls != 1 || now - lt > 2000) {
+		if (ls != 1 || now - lt > 500) {
 			//alert("in service");
 			service.currentPosition = newPosition;
 
@@ -275,11 +275,19 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL, us
 	};
 
 	var startWatching = function(){
-		 watchId = navigator.geolocation.watchPosition(onChange, onChangeError, {
+	/*	 watchId = navigator.geolocation.watchPosition(onChange, onChangeError, {
 			enableHighAccuracy: true,
 			maximumAge: 60000,
 			timeout: 15000
-		});
+		}); */
+        
+        watchId = $interval(function(){
+            navigator.geolocation.getCurrentPosition(onChange, onChangeError, {
+			enableHighAccuracy: true,
+			maximumAge: 60000,
+			timeout: 15000
+		})
+        },2000);
 	};
 
 	service.start = function () {
@@ -328,7 +336,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL, us
 	
 	service.stop = function () {
 	    if (watchId) {
-	       navigator.geolocation.clearWatch(watchId);
+	       $interval.cancel(watchId);
 	    }
 
 	    fb.child("liveLocs").child(userSession.authData.uid).remove();
