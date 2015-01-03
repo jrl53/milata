@@ -175,7 +175,7 @@ MapApp.config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', f
 * Geolocation service.
 */
 
-MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL, userSession) {
+MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval, fbURL, userSession) {
 //	'use strict';
 	
 	//Globals
@@ -282,12 +282,13 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, fbURL, us
 		}); */
         
         watchId = $interval(function(){
+            console.log("starting interval function");
             navigator.geolocation.getCurrentPosition(onChange, onChangeError, {
 			enableHighAccuracy: true,
 			maximumAge: 60000,
 			timeout: 15000
 		})
-        },15000);
+        },5000);
 	};
 
 	service.start = function () {
