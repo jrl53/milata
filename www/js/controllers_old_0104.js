@@ -9,8 +9,8 @@ MapApp.controller('MainCtrl', ['$scope', function($scope) {
   // do something
 }]);
 
-MapApp.controller('ProfileCtrl', ['$scope', 'loginService', function($scope, loginService) {
-    $scope.uS = loginService;
+MapApp.controller('ProfileCtrl', ['$scope', 'userSession', function($scope, userSession) {
+    $scope.uS = userSession;
     
 }]);
 
@@ -27,10 +27,10 @@ MapApp.controller('RouteSearchCtrl', ['$scope', '$firebase','fbURL', function($s
     
 }]);
 
-MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', 'loginService', 'displayService', 'fbURL', function($scope,  $cordovaOauth, loginService, displayService, fbURL) {
+MapApp.controller('SignInCtrl', ['$scope', '$rootScope', '$cordovaOauth', 'fbURL', function($scope, $rootScope,  $cordovaOauth, fbURL) {
     var fb = new Firebase(fbURL);
     
-    loginService.checkSession();
+    $rootScope.checkSession();
     
     $scope.user = {
         email: "",
@@ -38,51 +38,41 @@ MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', 'loginService', 'dis
         name: ""
     };
     $scope.logWithPass = function() {
-        displayService.show('Ingresando...');
+        $rootScope.show('Ingresando...');
         var email = this.user.email;
         var password = this.user.password;
         if (!email || !password) {
-            displayService.notify("Favor complete los campos");
+            $rootScope.notify("Favor complete los campos");
             return false;
         }
 
-        loginService.auth.$authWithPassword({
+        $rootScope.auth.$authWithPassword({
             email: email,
             password: password
         }).then(function(authData) {
-            displayService.hide();
+            $rootScope.hide();
           
         }, function(error) {
-            displayService.hide();
+            $rootScope.hide();
             if (error.code == 'INVALID_EMAIL') {
-                displayService.notify('Email incorrecto');
+                $rootScope.notify('Email incorrecto');
             } else if (error.code == 'INVALID_PASSWORD') {
-                displayService.notify('Contraseña incorrecta');
+                $rootScope.notify('Contraseña incorrecta');
             } else if (error.code == 'INVALID_USER') {
-                displayService.notify('Usuario incorrecto');
+                $rootScope.notify('Usuario incorrecto');
             } else {
-                displayService.notify('Oops, hay un problema. Favor avisarle a Chino');
+                $rootScope.notify('Oops, hay un problema. Favor avisarle a Chino');
             }
         });
     }
     
     $scope.logWithFacebook = function() {
-        displayService.show('Ingresando...');
-        $cordovaOauth.facebook("635359303242813", ["email"]).then(function(result) {
-            console.log("ngCordova loging returned: " ,result);
-            fb.authWithOAuthToken("facebook", result.access_token, function(error, authData){
-                if(error) {console.log("Within firebase logging flow: " + error); displayService.hide()}
-                else console.log("Within firebase logging flow: Success: " + authData);
-            })
+        alert("about to start loggin");
+        $cordovaOauth.facebook("635359303242813", ["email", "read_stream", "user_website", "user_location", "user_relationships"]).then(function(result) {
+            alert("nice!");
         }, function(error) {
+            alert("There was a problem signing in!  See the console for logs");
             console.log(error);
-            console.log("Maybe we are in a browser, trying with normal FB logging..");
-            loginService.auth.$authWithOAuthPopup("facebook").then(function(authData) {
-              console.log("Logged in as:", authData.uid);
-            }).catch(function(error) {
-              console.error("Authentication failed:", error);
-              displayService.hide();
-            });
         });
     };
     
@@ -93,8 +83,8 @@ MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', 'loginService', 'dis
 }]);
 
 MapApp.controller('SignUpCtrl', [
-    '$scope', '$firebaseAuth', '$window', 'loginService', 'displayService',
-    function($scope, $firebaseAuth, $window, loginService, displayService) {
+    '$scope', '$rootScope', '$firebaseAuth', '$window',
+    function($scope, $rootScope, $firebaseAuth, $window) {
 
         $scope.user = {
             email: "",
@@ -106,41 +96,41 @@ MapApp.controller('SignUpCtrl', [
             var password = this.user.password;
             var name = this.user.name;
             if (!email || !password || !name) {
-                displayService.notify("Favor complete los campos");
+                $rootScope.notify("Favor complete los campos");
                 return false;
             }
-            displayService.show('Registrando...');
+            $rootScope.show('Registrando...');
 
-            loginService.auth.$createUser(email, password).then(function() {
-                displayService.hide();
-                displayService.notify("Usuario creado");
-                return loginService.auth.$authWithPassword({
+            $rootScope.auth.$createUser(email, password).then(function() {
+                $rootScope.hide();
+                $rootScope.notify("Usuario creado");
+                return $rootScope.auth.$authWithPassword({
                     email: email,
                     password: password}
                 );
             }).then(function(authData){
                 console.log("Created/logged in.. Saving name");
-                loginService.mainFb.child("users").child(authData.uid).child("data").update({name: name});
+                $rootScope.mainFb.child("users").child(authData.uid).child("data").update({name: name});
             }).catch(function(error){
                 console.log("Error while creating/logging in", error);
                 if (error.code == 'INVALID_EMAIL') {
-                        displayService.notify('Email incorrecto');
+                        $rootScope.notify('Email incorrecto');
                     } else if (error.code == 'EMAIL_TAKEN') {
-                        displayService.notify('Email existente. Intente otro');
+                        $rootScope.notify('Email existente. Intente otro');
                     } else {
-                        displayService.notify('Oops algo anda mal. Favor llamar a Chino');
+                        $rootScope.notify('Oops algo anda mal. Favor llamar a Chino');
                     }
             });
         }
     }
 ]);
 
-MapApp.controller('LeftMenuCtrl', ['$scope', 'loginService', function($scope, loginService) {
+MapApp.controller('LeftMenuCtrl', ['$scope', '$rootScope', 'userSession', function($scope, $rootScope, userSession) {
     //$scope.authData = $rootScope.authData;
-    $scope.uSession = loginService;
+    $scope.uSession = userSession;
     console.log("in LeftMenuCtrl... authData: ", $scope.uSession.authData);
     $scope.logout = function(){
-        loginService.logout();
+        $rootScope.logout();
     };
 }]);
 

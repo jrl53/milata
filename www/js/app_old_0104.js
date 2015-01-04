@@ -5,9 +5,10 @@ var MapApp = angular.module('MapApp', [
 MapApp.constant('fbURL',"https://boiling-inferno-6943.firebaseio.com");
 MapApp.constant('version', "0.0.3");
 
+MapApp.value('userSession', {});
 
-MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $firebaseAuth, $firebase, $ionicLoading,
-                     $window, version, fbURL) {
+MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $rootScope, $firebaseAuth, $firebase, $ionicLoading,
+                     $window, version, fbURL, userSession) {
   $ionicPlatform.ready(function() {
     if(window.StatusBar) {
       StatusBar.styleDefault();
@@ -15,7 +16,7 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $firebaseA
     //check version**********************************************************
     var fb = new Firebase(fbURL);
   
-    
+    $rootScope.mainFb = fb;
       
       
     fb.child("version").once("value",function(snap){
@@ -34,13 +35,96 @@ MapApp.run(function($ionicPlatform, $ionicPopup, $ionicModal, $state, $firebaseA
 
             console.log("lets close");
         } 
+    });
+    //Authentication*************************************************************************
+    
+    
+      
+    $rootScope.uid = {};  
+    $rootScope.auth = $firebaseAuth(fb);
+    
+    //Set listener*****
+    $rootScope.auth.$onAuth(function(authData){
+        if(authData){
+            console.log("Saving user in fb", authData);
+            fb.child("users").child(authData.uid).update(authData);
+            var dataFb = fb.child("users").child(authData.uid).child("data");
+            //set name and picture
+            switch(authData.provider){
+                case 'facebook':
+                    dataFb.update({
+                        name: authData.facebook.displayName,
+                        pic_url: authData.facebook.cachedUserProfile.picture.data.url
+                    });
+                    break;
+                case 'twitter':
+                    dataFb.update({
+                        name: authData.twitter.displayName,
+                        pic_url: authData.twitter.cachedUserProfile.profile_image_url
+                    });
+                    break;
+                case 'password':
+                    dataFb.update({
+                        pic_url: "http://www.milatacr.com/www/img/milata_icon_512.png"
+                    });
+                    break;
+            };
+            
+            userSession.authData = authData;
+            userSession.userData = $firebase(fb.child("users").child(authData.uid).child("data")).$asObject();
+            //$rootScope.authData = authData;
+            console.log("trying to go to home");
+            $state.go('menu.home');
+        }
         else {
-            console.log("version checked successfully");
+            console.log("not authorizing right now");
+            $state.go('auth.signin');
         }
     });
-        
-    });
+    
+    $rootScope.logout = function() {
+        console.log("logging out...");
+        $rootScope.auth.$unauth();
+
+        userSession.authData = {};
+        //$rootScope.authData = {};
+    };
       
+    $rootScope.checkSession = function(){
+        var authData = $rootScope.auth.$getAuth();
+        if (authData){
+            console.log("Already logged in.. rerouting to main", authData);
+            $state.go("menu.home");
+        }
+        else {
+            console.log("Not logged in.. redirecting to login page");
+        }
+    };
+      
+    //display helpers*********************************************************  
+    $rootScope.show = function(text) {
+        $rootScope.loading = $ionicLoading.show({
+                template: text ? text : 'Loading..',
+                animation: 'fade-in',
+                showBackdrop: true,
+                maxWidth: 200,
+                showDelay: 0
+            });
+    };
+
+    $rootScope.hide = function() {
+        $ionicLoading.hide();
+    };
+
+    $rootScope.notify = function(text) {
+        $rootScope.show(text);
+        $window.setTimeout(function() {
+            $rootScope.hide();
+        }, 1999);
+    };
+
+      
+  });
 });
 
 
@@ -87,121 +171,16 @@ MapApp.config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', f
     
 }]);
 
-MapApp.factory('loginService', function($state, $firebaseAuth, $firebase, displayService, fbURL){
-    
-    //Authentication*********************
-    var s = {};
-               
-    s.mainFb = new Firebase(fbURL);
-
-    s.uid = {}; 
-    s.authData = {};
-    s.userData = {};
-    s.auth = $firebaseAuth(s.mainFb);
-
-    //Set listener*****
-    s.auth.$onAuth(function(authData){
-        displayService.hide();
-        if(authData){
-            console.log("Saving user in fb", authData);
-            s.mainFb.child("users").child(authData.uid).update(authData);
-            var dataFb = s.mainFb.child("users").child(authData.uid).child("data");
-            //set name and picture
-            switch(authData.provider){
-                case 'facebook':
-                    dataFb.update({
-                        name: authData.facebook.displayName,
-                        pic_url: authData.facebook.cachedUserProfile.picture.data.url
-                    });
-                    break;
-                case 'twitter':
-                    dataFb.update({
-                        name: authData.twitter.displayName,
-                        pic_url: authData.twitter.cachedUserProfile.profile_image_url
-                    });
-                    break;
-                case 'password':
-                    dataFb.update({
-                        pic_url: "http://www.milatacr.com/www/img/milata_icon_512.png"
-                    });
-                    break;
-            };
-
-            s.authData = authData;
-            s.userData = $firebase(s.mainFb.child("users").child(authData.uid).child("data")).$asObject();
-            //$rootScope.authData = authData;
-            console.log("trying to go to home");
-            $state.go('menu.home');
-        }
-        else {
-            console.log("not authorizing right now");
-            $state.go('auth.signin');
-        }
-    });
-
-    s.logout = function() {
-        console.log("logging out...");
-        s.auth.$unauth();
-
-        s.authData = {};
-        //$rootScope.authData = {};
-    };
-
-    s.checkSession = function(){
-        var authData = s.auth.$getAuth();
-        if (authData){
-            console.log("Already logged in.. rerouting to main", authData);
-            $state.go("menu.home");
-        }
-        else {
-            console.log("Not logged in.. redirecting to login page");
-        }
-    };
-
-    return s;
-
-
-              
-});
-
-MapApp.factory('displayService', function($ionicLoading, $window){
-
-    var s = {};
-    //display helpers*********************************************************  
-    s.show = function(text) {
-        s.loading = $ionicLoading.show({
-                template: text ? text : 'Loading..',
-                animation: 'fade-in',
-                showBackdrop: true,
-                maxWidth: 200,
-                showDelay: 0
-            });
-    };
-
-    s.hide = function() {
-        $ionicLoading.hide();
-    };
-
-    s.notify = function(text) {
-        s.show(text);
-        $window.setTimeout(function() {
-            s.hide();
-        }, 1999);
-    };
-    
-    return s;
-});
-
 /**
 * Geolocation service.
 */
 
-MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval, fbURL, loginService) {
+MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval, fbURL, userSession) {
 //	'use strict';
 	
 	//Globals
 	
-	var uS = loginService;
+	var uS = userSession;
     
    // var username = uS.authData.uid;
 	//-------------------
@@ -281,7 +260,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 			};
 			service.latLngs.$add(toPush);
 
-			geoFire.set(uS.authData.uid,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function(){
+			geoFire.set(userSession.authData.uid,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function(){
 				console.log("Setting new position in geoFire");
 			      
 			  }).catch(function(error){
@@ -317,7 +296,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 		    //Get the unique id object reference from Firebase
 		    sessionRef = fb.child("routes").child(service.routeData.currentRouteId).push({
 		    	created: Firebase.ServerValue.TIMESTAMP,
-		    	username: uS.authData.uid,
+		    	username: userSession.authData.uid,
 		    	routeID: service.routeData.currentRouteId
 		    });	
 
@@ -326,19 +305,19 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 			service.latLngs = sync.$asArray();
 			userStops = $firebase(sessionRef.child("stops")).$asArray();
 
-		    fb.child("liveLocsData").child(uS.authData.uid)
+		    fb.child("liveLocsData").child(userSession.authData.uid)
                 .update(service.allRoutes[service.routeData.currentRouteId]);
             
-            fb.child("liveLocsData").child(uS.authData.uid).onDisconnect().remove(function(err){
+            fb.child("liveLocsData").child(userSession.authData.uid).onDisconnect().remove(function(err){
                 console.log("Trying to attach onDisconnect to liveLocs", err);
             });
             
 
-		    geoFire.set(uS.authData.uid,[position.coords.latitude, position.coords.longitude]).then(function(){
-				console.log("Current user " + uS.authData.uid + "'s location has been added to GeoFire");
+		    geoFire.set(userSession.authData.uid,[position.coords.latitude, position.coords.longitude]).then(function(){
+				console.log("Current user " + userSession.authData.uid + "'s location has been added to GeoFire");
 			      // When the user disconnects from Firebase (e.g. closes the app, exits the browser),
 			      // remove their GeoFire entry
-			      fb.child("liveLocs").child(uS.authData.uid).onDisconnect().remove();
+			      fb.child("liveLocs").child(userSession.authData.uid).onDisconnect().remove();
 			      
 			      
 			  }).catch(function(error){
@@ -361,8 +340,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	       $interval.cancel(watchId);
 	    }
 
-	    fb.child("liveLocs").child(uS.authData.uid).remove();
-        fb.child("liveLocsData").child(uS.authData.uid).remove();
+	    fb.child("liveLocs").child(userSession.authData.uid).remove();
+        fb.child("liveLocsData").child(userSession.authData.uid).remove();
         
 	}
 
