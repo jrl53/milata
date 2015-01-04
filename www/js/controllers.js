@@ -143,9 +143,26 @@ MapApp.controller('LeftMenuCtrl', ['$scope', 'loginService', function($scope, lo
 /**
  * A google map / GPS controller.
  */
-MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocationService', 'displayPathService', 
-	function($scope, $ionicModal, leafletData, geoLocationService, displayPathService) {
+MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocationService', 'displayPathService', 'leafletData', 
+	function($scope, $ionicModal, leafletData, geoLocationService, displayPathService, leafletData) {
 	
+    leafletData.getMap().then(function(map) {
+       var lc = L.control.locate({
+            position: 'topleft',  // set the location of the control
+            drawCircle: true,  // controls whether a circle is drawn that shows the uncertainty about the location
+            follow: true,  // follow the user's location
+            remainActive: true, // if true locate control remains active on click even if the user's location is in view.
+            icon: 'icon ion-android-locate',  // class for icon, fa-location-arrow or fa-map-marker
+            showPopup: false, // display a popup when the user click on the inner marker
+            locateOptions: {enableHighAccuracy: true,
+                maximumAge: 60000,
+                timeout: 15000
+            }  // define location options e.g enableHighAccuracy: true or maxZoom: 10
+        }).addTo(map);
+        
+        map.on('dragstart', lc._stopFollowing, lc);
+    });
+        
     $scope.gls = geoLocationService;
     
     $scope.allRoutes = geoLocationService.allRoutes;
@@ -225,7 +242,6 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocati
     var updateLine = function(){
     	console.log("updating line");
     	$scope.paths.p1.latlngs = geoLocationService.latLngs;
-    	
     };
 
 
@@ -233,7 +249,7 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocati
     	console.log("updating");
     	//alert("yey!");
     	$scope.currentPos = geoLocationService.currentPosition;
-    	$scope.moveCenter($scope.currentPos);
+    	//$scope.moveCenter($scope.currentPos);
 
     	$scope.$apply();
 
