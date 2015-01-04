@@ -87,7 +87,7 @@ MapApp.config(['$stateProvider', '$urlRouterProvider', '$ionicConfigProvider', f
     
 }]);
 
-MapApp.factory('loginService', function($state, $firebaseAuth, $firebase, displayService, fbURL){
+MapApp.factory('loginService', function($state, $firebaseAuth, $firebase, helperService, fbURL){
     
     //Authentication*********************
     var s = {};
@@ -101,7 +101,7 @@ MapApp.factory('loginService', function($state, $firebaseAuth, $firebase, displa
 
     //Set listener*****
     s.auth.$onAuth(function(authData){
-        displayService.hide();
+        helperService.hide();
         if(authData){
             console.log("Saving user in fb", authData);
             s.mainFb.child("users").child(authData.uid).update(authData);
@@ -164,7 +164,7 @@ MapApp.factory('loginService', function($state, $firebaseAuth, $firebase, displa
               
 });
 
-MapApp.factory('displayService', function($ionicLoading, $window){
+MapApp.factory('helperService', function($ionicLoading, $window){
 
     var s = {};
     //display helpers*********************************************************  
@@ -196,7 +196,7 @@ MapApp.factory('displayService', function($ionicLoading, $window){
 * Geolocation service.
 */
 
-MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval, fbURL, loginService) {
+MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval, $rootScope, fbURL, loginService) {
 //	'use strict';
 	
 	//Globals
@@ -426,19 +426,21 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 
 	  	function addMarker(vehicle, vehicleId, inColor){
     		console.log("Adding Marker in factory side", vehicle.l[0])
-			service.markers[vehicleId] = 
-				{
-		    		lat: vehicle.l[0],
-		    		lng:  vehicle.l[1],
-		            message: vehicleId,
-		            focus: false,
-		            draggable: false,
-		            layer: 'buses',
-		            icon: {
-		            	type: 'awesomeMarker',
-		            	markerColor: 'red'
-		            }
-		        };
+			$rootScope.$apply(function(){
+                service.markers[vehicleId] = 
+                    {
+                        lat: vehicle.l[0],
+                        lng:  vehicle.l[1],
+                        message: vehicleId,
+                        focus: false,
+                        draggable: false,
+                        layer: 'buses',
+                        icon: {
+                            type: 'awesomeMarker',
+                            markerColor: 'red'
+                        }
+                    };
+            });
 		    observerCallbacks[2]();
 		};
 
@@ -531,9 +533,6 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 
 	return service;
 });
-
-
-
 
 
 /**

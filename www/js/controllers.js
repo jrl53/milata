@@ -27,7 +27,7 @@ MapApp.controller('RouteSearchCtrl', ['$scope', '$firebase','fbURL', function($s
     
 }]);
 
-MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', 'loginService', 'displayService', 'fbURL', function($scope,  $cordovaOauth, loginService, displayService, fbURL) {
+MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', 'loginService', 'helperService', 'fbURL', function($scope,  $cordovaOauth, loginService, helperService, fbURL) {
     var fb = new Firebase(fbURL);
     
     loginService.checkSession();
@@ -38,11 +38,11 @@ MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', 'loginService', 'dis
         name: ""
     };
     $scope.logWithPass = function() {
-        displayService.show('Ingresando...');
+        helperService.show('Ingresando...');
         var email = this.user.email;
         var password = this.user.password;
         if (!email || !password) {
-            displayService.notify("Favor complete los campos");
+            helperService.notify("Favor complete los campos");
             return false;
         }
 
@@ -50,51 +50,49 @@ MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', 'loginService', 'dis
             email: email,
             password: password
         }).then(function(authData) {
-            displayService.hide();
+            helperService.hide();
           
         }, function(error) {
-            displayService.hide();
+            helperService.hide();
             if (error.code == 'INVALID_EMAIL') {
-                displayService.notify('Email incorrecto');
+                helperService.notify('Email incorrecto');
             } else if (error.code == 'INVALID_PASSWORD') {
-                displayService.notify('Contraseña incorrecta');
+                helperService.notify('Contraseña incorrecta');
             } else if (error.code == 'INVALID_USER') {
-                displayService.notify('Usuario incorrecto');
+                helperService.notify('Usuario incorrecto');
             } else {
-                displayService.notify('Oops, hay un problema. Favor avisarle a Chino');
+                helperService.notify('Oops, hay un problema. Favor avisarle a Chino');
             }
         });
     }
     
     $scope.logWithFacebook = function() {
-        displayService.show('Ingresando...');
-        $cordovaOauth.facebook("635359303242813", ["email"]).then(function(result) {
-            console.log("ngCordova loging returned: " ,result);
-            fb.authWithOAuthToken("facebook", result.access_token, function(error, authData){
-                if(error) {console.log("Within firebase logging flow: " + error); displayService.hide()}
-                else console.log("Within firebase logging flow: Success: " + authData);
-            })
-        }, function(error) {
-            console.log(error);
-            console.log("Maybe we are in a browser, trying with normal FB logging..");
-            loginService.auth.$authWithOAuthPopup("facebook").then(function(authData) {
-              console.log("Logged in as:", authData.uid);
-            }).catch(function(error) {
-              console.error("Authentication failed:", error);
-              displayService.hide();
-            });
+        helperService.show('Ingresando...');
+        
+        loginService.auth.$authWithOAuthPopup("facebook",{scope: "email"}).then(function(authData) {
+          console.log("Logged in as:", authData);
+        }).catch(function(error) {
+          console.error("Authentication failed:", error);
+          helperService.hide();
         });
+     
     };
     
     $scope.logWithTwitter = function() {
-        simpleLog.$login('twitter');
+        loginService.auth.$authWithOAuthPopup("twitter").then(function(authData) {
+              console.log("Logged in as:", authData.uid);
+            }).catch(function(error) {
+              console.log("Authentication failed:" + error);
+              helperService.hide();
+            });
     };
+    
 
 }]);
 
 MapApp.controller('SignUpCtrl', [
-    '$scope', '$firebaseAuth', '$window', 'loginService', 'displayService',
-    function($scope, $firebaseAuth, $window, loginService, displayService) {
+    '$scope', '$firebaseAuth', '$window', 'loginService', 'helperService',
+    function($scope, $firebaseAuth, $window, loginService, helperService) {
 
         $scope.user = {
             email: "",
@@ -106,14 +104,14 @@ MapApp.controller('SignUpCtrl', [
             var password = this.user.password;
             var name = this.user.name;
             if (!email || !password || !name) {
-                displayService.notify("Favor complete los campos");
+                helperService.notify("Favor complete los campos");
                 return false;
             }
-            displayService.show('Registrando...');
+            helperService.show('Registrando...');
 
             loginService.auth.$createUser(email, password).then(function() {
-                displayService.hide();
-                displayService.notify("Usuario creado");
+                helperService.hide();
+                helperService.notify("Usuario creado");
                 return loginService.auth.$authWithPassword({
                     email: email,
                     password: password}
@@ -124,11 +122,11 @@ MapApp.controller('SignUpCtrl', [
             }).catch(function(error){
                 console.log("Error while creating/logging in", error);
                 if (error.code == 'INVALID_EMAIL') {
-                        displayService.notify('Email incorrecto');
+                        helperService.notify('Email incorrecto');
                     } else if (error.code == 'EMAIL_TAKEN') {
-                        displayService.notify('Email existente. Intente otro');
+                        helperService.notify('Email existente. Intente otro');
                     } else {
-                        displayService.notify('Oops algo anda mal. Favor llamar a Chino');
+                        helperService.notify('Oops algo anda mal. Favor llamar a Chino');
                     }
             });
         }
@@ -150,6 +148,8 @@ MapApp.controller('LeftMenuCtrl', ['$scope', 'loginService', function($scope, lo
 MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocationService', 'displayPathService', 
 	function($scope, $ionicModal, leafletData, geoLocationService, displayPathService) {
 	
+    $scope.gls = geoLocationService;
+    
     $scope.allRoutes = geoLocationService.allRoutes;
     $scope.routeData = geoLocationService.routeData;   
 	$scope.markers = geoLocationService.markers;
@@ -219,8 +219,8 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocati
     
     var updateMarkers = function(){
     	console.log("updating markers");
-    	$scope.markers = geoLocationService.markers;
-    	$scope.$apply();
+//    	$scope.markers = geoLocationService.markers;
+//    	$scope.$apply();
     };
 
 
