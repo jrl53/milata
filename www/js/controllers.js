@@ -69,7 +69,7 @@ MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', 'loginService', 'hel
     $scope.logWithFacebook = function() {
         helperService.show('Ingresando...');
         
-        loginService.auth.$authWithOAuthPopup("facebook",{scope: "email"}).then(function(authData) {
+        loginService.auth.$authWithOAuthPopup("facebook",{scope: "email", remember: "sessionOnly"}).then(function(authData) {
           console.log("Logged in as:", authData);
         }).catch(function(error) {
           console.error("Authentication failed:", error);
@@ -86,8 +86,6 @@ MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', 'loginService', 'hel
               helperService.hide();
             });
     };
-    
-
 }]);
 
 MapApp.controller('SignUpCtrl', [

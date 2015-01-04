@@ -164,9 +164,21 @@ MapApp.factory('loginService', function($state, $firebaseAuth, $firebase, helper
               
 });
 
-MapApp.factory('helperService', function($ionicLoading, $window){
+MapApp.factory('helperService', function($ionicLoading, $window, $rootScope){
 
     var s = {};
+    
+    //update helpers*********************************************************
+    
+    s.apply = function(toUpdate){
+        if($rootScope.$root.$$phase != '$apply' && $rootScope.$root.$$phase != '$digest'){
+              $rootScope.$apply(toUpdate);
+           }
+           else {
+             toUpdate;
+          }
+    };
+    
     //display helpers*********************************************************  
     s.show = function(text) {
         s.loading = $ionicLoading.show({
@@ -196,7 +208,7 @@ MapApp.factory('helperService', function($ionicLoading, $window){
 * Geolocation service.
 */
 
-MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval, $rootScope, fbURL, loginService) {
+MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval, $rootScope, fbURL, loginService, helperService) {
 //	'use strict';
 	
 	//Globals
@@ -208,8 +220,6 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 
 	var service = {};
 	var watchId;
-	var lt = 0;
-	var ls = false;
 	
 	var fb = new Firebase(fbURL);
 	var geoFire = new GeoFire(fb.child("liveLocs"));
@@ -270,7 +280,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	var onChange = function(newPosition) {
 
 		var now = new Date().getTime();
-		if (ls != 1 || now - lt > 500) {
+		
 			//alert("in service");
 			service.currentPosition = newPosition;
 
@@ -289,9 +299,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 			  });
 
 			notifyObservers();
-			lt = now;
-			ls = 1;
-		}
+			
+		
 		
 	};
 
@@ -426,7 +435,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 
 	  	function addMarker(vehicle, vehicleId, inColor){
     		console.log("Adding Marker in factory side", vehicle.l[0])
-			$rootScope.$apply(function(){
+			helperService.apply(function(){
                 service.markers[vehicleId] = 
                     {
                         lat: vehicle.l[0],
@@ -441,20 +450,23 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
                         }
                     };
             });
-		    observerCallbacks[2]();
+		    //observerCallbacks[2]();
 		};
 
 		function updateMarker(location, vehicleId){
-    		console.log("Updating Marker in factory side", location[0])
-			service.markers[vehicleId].lat = location[0];
-			service.markers[vehicleId].lng = location[1];
-		    		
-		    observerCallbacks[2]();
+    		console.log("Updating Marker in factory side", location[0]);
+            helperService.apply(function(){
+                service.markers[vehicleId].lat = location[0];
+                service.markers[vehicleId].lng = location[1];
+            });
+		    //observerCallbacks[2]();
 		};
 
 		function deleteMarker(vehicleId){
-			delete service.markers[vehicleId];
-			observerCallbacks[2]();
+            helperService.apply(function() {
+                delete service.markers[vehicleId];
+               // observerCallbacks[2]();
+            });
 		};
 
 	  	/*************/
