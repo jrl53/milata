@@ -168,14 +168,40 @@ MapApp.factory('helperService', function($ionicLoading, $window, $rootScope){
 
     var s = {};
     
-    //update helpers*********************************************************
+    //distance calculation helpers
+    
+    function toRad(value) {
+	  var RADIANT_CONSTANT = 0.0174532925199433;
+	  return (value * RADIANT_CONSTANT);
+	}
+
+	s. calcDistance = function(starting, ending) {
+	  var KM_RATIO = 6371;
+	  try {      
+	    var dLat = toRad(ending.latitude - starting.latitude);
+	    var dLon = toRad(ending.longitude - starting.longitude);
+	    var lat1Rad = toRad(starting.latitude);
+	    var lat2Rad = toRad(ending.latitude);
+	    
+	    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+	            Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1Rad) * Math.cos(lat2Rad);
+	    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+	    var d = KM_RATIO * c;
+	    return d;
+	  } catch(e) {
+	    return -1;
+	  }
+	}
+    
+    
+    //update binding helpers*********************************************************
     
     s.apply = function(toUpdate){
         if($rootScope.$root.$$phase != '$apply' && $rootScope.$root.$$phase != '$digest'){
               $rootScope.$apply(toUpdate);
            }
            else {
-             toUpdate;
+             toUpdate();
           }
     };
     
@@ -230,6 +256,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 
 	var userStopCount = 0;
 	var userStops = []; 
+    var tripDistance = 0;
 
 	service.latLngs = [];
 	service.currentPosition = {};
@@ -387,7 +414,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
     		lng:  service.currentPosition.coords.longitude,
             message: "new stop",
             focus: false,
-            draggable: false,
+            draggable: true,
             layer: 'stops',
             icon: {
                 iconUrl: 'img/bus_stop3.png',
@@ -422,16 +449,6 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	  /*  HELPERS  */
 	  /*************/
 	  /* Returns a random string of the inputted length */
-	  function generateRandomString(length) {
-	      var text = "";
-	      var validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-	      for(var i = 0; i < length; i++) {
-	          text += validChars.charAt(Math.floor(Math.random() * validChars.length));
-	      }
-
-	      return text;
-	  }
 
 	  	function addMarker(vehicle, vehicleId, inColor){
     		console.log("Adding Marker in factory side", vehicle.l[0])
@@ -465,8 +482,9 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 		function deleteMarker(vehicleId){
             helperService.apply(function() {
                 delete service.markers[vehicleId];
-               // observerCallbacks[2]();
+                
             });
+           // observerCallbacks[2]();
 		};
 
 	  	/*************/
@@ -504,11 +522,13 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 				  
 
 				  fb.child("liveLocsData").child(vehicleId).once("value", function(snap){ 
-				  	addMarker(vehicle, vehicleId);
-				  	service.markers[vehicleId].icon.markerColor = snap.val().color;
-				  	service.markers[vehicleId].message = snap.val().name;
-				  	observerCallbacks[2]();
-					
+                    addMarker(vehicle, vehicleId);
+                    helperService.apply(function(){
+                        service.markers[vehicleId].icon.markerColor = snap.val().color;
+                        service.markers[vehicleId].message = snap.val().name;
+                       
+                    });
+					// observerCallbacks[2]();
 				  });
 
 			      }
