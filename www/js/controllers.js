@@ -151,12 +151,13 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocati
             position: 'topleft',  // set the location of the control
             drawCircle: true,  // controls whether a circle is drawn that shows the uncertainty about the location
             follow: true,  // follow the user's location
-            remainActive: true, // if true locate control remains active on click even if the user's location is in view.
+            remainActive: false, // if true locate control remains active on click even if the user's location is in view.
             icon: 'icon ion-android-locate',  // class for icon, fa-location-arrow or fa-map-marker
             showPopup: false, // display a popup when the user click on the inner marker
             locateOptions: {enableHighAccuracy: true,
                 maximumAge: 60000,
-                timeout: 15000
+                timeout: 15000,
+                maxZoom: 15
             }  // define location options e.g enableHighAccuracy: true or maxZoom: 10
         }).addTo(map);
         
