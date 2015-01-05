@@ -285,24 +285,9 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
             icon: {
                 iconUrl: 'img/office.png',
                 iconSize: [30, 30]
-            },
-			label: {
-							message: "<div ng-include src=\"'templates/busMarkerTemplate.html'\"></div>"
-						}
-        },
-		another_marker: {
-			lat: 9.965061,
-            lng:  -84.220121,
-			focus: true,
-			title: "Marker",
-			draggable: true,
-			label: {
-				message: "hi",
-				options: {
-					noHide: true
-				}
-			}
-         }
+            }
+			
+        }
     };
 
 	

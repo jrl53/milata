@@ -4,7 +4,10 @@
  */
 
 MapApp.controller('MarkerCtrl', ['$scope', function($scope) {
-  // do something
+	$scope.num = 0;
+	$scope.add = function(){
+		$scope.num =+ 1;
+	};
 }]);
 
 MapApp.controller('MainCtrl', ['$scope', function($scope) {
@@ -71,7 +74,7 @@ MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', 'loginService', 'hel
     $scope.logWithFacebook = function() {
         helperService.show('Ingresando...');
         
-        loginService.auth.$authWithOAuthPopup("facebook",{scope: "email", remember: "sessionOnly"}).then(function(authData) {
+        loginService.auth.$authWithOAuthPopup("facebook",{scope: "email"}).then(function(authData) {
           console.log("Logged in as:", authData);
         }).catch(function(error) {
           console.error("Authentication failed:", error);
