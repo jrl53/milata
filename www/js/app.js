@@ -187,8 +187,12 @@ MapApp.factory('helperService', function($ionicLoading, $window, $rootScope){
 	            Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1Rad) * Math.cos(lat2Rad);
 	    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 	    var d = KM_RATIO * c;
+		 
+		  alert("after update distance: " + d);
+		 
 	    return d;
 	  } catch(e) {
+		  alert("caught distance error: " + e);
 	    return -1;
 	  }
 	}
