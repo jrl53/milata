@@ -3,7 +3,9 @@
  * MAIN CONTROLLER - handle inapp browser
  */
 
-
+MapApp.controller('MarkerCtrl', ['$scope', function($scope) {
+  // do something
+}]);
 
 MapApp.controller('MainCtrl', ['$scope', function($scope) {
   // do something
@@ -271,9 +273,8 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocati
 	    if (on) {
 	      geoLocationService.start();
 	    } else {
-	      geoLocationService.stop();
+	      geoLocationService.stop($scope.message);
           $scope.paths.p1.latlngs = [];
-          geoLocationService.sendtoFBase($scope.message);
           $scope.submitModal.hide();
 	    }
 	  };

@@ -188,11 +188,11 @@ MapApp.factory('helperService', function($ionicLoading, $window, $rootScope){
 	    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 	    var d = KM_RATIO * c;
 		 
-		  alert("after update distance: " + d);
+		
 		 
 	    return d;
 	  } catch(e) {
-		  alert("caught distance error: " + e);
+		 
 	    return -1;
 	  }
 	}
@@ -278,15 +278,31 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
     	office:{
             lat: 9.965061,
             lng:  -84.120121,
-            message: "UltraPark II",
+            message: "<div ng-include src=\"'templates/busMarkerTemplate.html'\"></div>",
             focus: false,
             draggable: false,
             layer: 'stops',
             icon: {
                 iconUrl: 'img/office.png',
                 iconSize: [30, 30]
-            }
-        }    
+            },
+			label: {
+							message: "<div ng-include src=\"'templates/busMarkerTemplate.html'\"></div>"
+						}
+        },
+		another_marker: {
+			lat: 9.965061,
+            lng:  -84.220121,
+			focus: true,
+			title: "Marker",
+			draggable: true,
+			label: {
+				message: "hi",
+				options: {
+					noHide: true
+				}
+			}
+         }
     };
 
 	
@@ -406,7 +422,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 
 	}
 	
-	service.stop = function () {
+	service.stop = function (message) {
         service.isOn = false;
         service.tripDistance = 0;
 	    if (watchId) {
@@ -415,13 +431,24 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 
 	    fb.child("liveLocs").child(uS.authData.uid).remove();
         fb.child("liveLocsData").child(uS.authData.uid).remove();
+		
+		//send to FB
+		message.totalDistKM = service.tripDistance;
+		sessionRef.update(message,				
+			function(error){
+					if (error) {
+						alert("Error" + error);
+					} else {
+						$ionicPopup.alert({
+						     title: 'Pura vida!',
+						     template: 'Data enviada satisfactoriamente. Muchas gracias por contribuir.'
+						   });
+						   
+					}
+			}
+		);
         
 	}
-
-	service.resume = function() {
-		startWatching();
-	}
-
 	
 	
 	service.addStop = function(){	
@@ -441,24 +468,6 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 		userStops.$add(mark);
 		userStopCount += 1;
 		observerCallbacks[2]();
-	}
-
-	service.sendtoFBase = function(message){
-		
-		sessionRef.update(message,				
-			function(error){
-					if (error) {
-						alert("Error" + error);
-					} else {
-						$ionicPopup.alert({
-						     title: 'Pura vida!',
-						     template: 'Data enviada satisfactoriamente. Muchas gracias por contribuir.'
-						   });
-						   
-					}
-			}
-		);
-	
 	}
 
 	  /*************/
@@ -481,6 +490,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
                             type: 'awesomeMarker',
                             markerColor: 'red'
                         }
+						
                     };
             });
 		    //observerCallbacks[2]();
