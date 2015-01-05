@@ -178,10 +178,10 @@ MapApp.factory('helperService', function($ionicLoading, $window, $rootScope){
 	s.calcDistance = function(starting, ending) {
 	  var KM_RATIO = 6371;
 	  try {      
-	    var dLat = toRad(ending.latitude - starting.latitude);
-	    var dLon = toRad(ending.longitude - starting.longitude);
-	    var lat1Rad = toRad(starting.latitude);
-	    var lat2Rad = toRad(ending.latitude);
+	    var dLat = toRad(ending.coords.latitude - starting.coords.latitude);
+	    var dLon = toRad(ending.coords.longitude - starting.coords.longitude);
+	    var lat1Rad = toRad(starting.coords.latitude);
+	    var lat2Rad = toRad(ending.coords.latitude);
 	    
 	    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
 	            Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1Rad) * Math.cos(lat2Rad);
