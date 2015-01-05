@@ -1,7 +1,8 @@
 <div class="modal">
         <header class="bar bar-header bar-royal">
-          <h1 class="title">Resumen</h1>
-          <div class="button button-clear" ng-click="submitModal.hide()"><span class="icon ion-close"></span></div>
+          <div class="button button-clear" ng-click="submitModal.hide()" ><span class="icon ion-ios-close-empty"></span></div>
+            <h1 class="title">Resumen</h1>
+          
         </header>
     
         <ion-content class="has-header"  >
@@ -11,7 +12,7 @@
                   <h1>Ruta</h1>
             <div class="list card">
      
-            <a class="item item-icon-left" href=""><i class="icon ion-map icon-milata"></i>Kilometros contribuidos<p>{{uS.userData.totalKm? uS.userData.totalKm : 0}}</p></a>
+            <a class="item item-icon-left" href=""><i class="icon ion-map icon-milata"></i>Kilometros contribuidos<p>{{gls.tripDistance | number: 2}}</p></a>
             <a class="item item-icon-left" href=""><i class="icon ion-android-bus icon-milata"></i>Paradas reportadas<p>{{uS.userData.totalStops? uS.userData.totalStops : 0}}</p></a>
   
             
@@ -27,18 +28,16 @@
               </ion-slide>
             </ion-slide-box>
             
-          <div class="list">
+          <div class="list padding">
 			  <label class="item item-input item-stacked-label">
 			    <span class="input-label">Algun comentario para el equipo?</span>
 			    <input ng-model="message.comment" type="text" placeholder="Demasiado chiva.. pero...">
 			  </label>
-		   </div>
+		   
 		   	
-		   	<div class="padding container">
-                            <div class="row">
-                                <button ng-click="recording(false);sendtoFBase();submitModal.hide();" class="button button-stable  button-small col col-40 "> Listo. Enviar! </button>
-                            </div>
-                        </div>
+        
+        <button class="button button-block button-energized" ng-click="recording(false);"> Listo. Enviar! </button>
+            </div>              
         
         </ion-content>
       </div>

@@ -175,7 +175,7 @@ MapApp.factory('helperService', function($ionicLoading, $window, $rootScope){
 	  return (value * RADIANT_CONSTANT);
 	}
 
-	s. calcDistance = function(starting, ending) {
+	s.calcDistance = function(starting, ending) {
 	  var KM_RATIO = 6371;
 	  try {      
 	    var dLat = toRad(ending.latitude - starting.latitude);
@@ -256,8 +256,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 
 	var userStopCount = 0;
 	var userStops = []; 
-    var tripDistance = 0;
-
+    
+    var prevLoc = {};
+	
+	service.tripDistance = 0;
 	service.latLngs = [];
 	service.currentPosition = {};
 	
@@ -308,24 +310,27 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 
 		var now = new Date().getTime();
 		
-			//alert("in service");
-			service.currentPosition = newPosition;
+        //alert("in service");
+        service.currentPosition = newPosition;
+		
+		//update distance
+		service.tripDistance += helperService.calcDistance(prevLoc, newPosition);
+		
+        var toPush = {
+            lat:newPosition.coords.latitude, 
+            lng:newPosition.coords.longitude,
+            time:now
+        };
+        service.latLngs.$add(toPush);
 
-			var toPush = {
-				lat:newPosition.coords.latitude, 
-				lng:newPosition.coords.longitude,
-				time:now
-			};
-			service.latLngs.$add(toPush);
+        geoFire.set(uS.authData.uid,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function()               {
+            console.log("Setting new position in geoFire");
 
-			geoFire.set(uS.authData.uid,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function(){
-				console.log("Setting new position in geoFire");
-			      
-			  }).catch(function(error){
-			  	console.log(error);
-			  });
+          }).catch(function(error){
+            console.log(error);
+          });
 
-			notifyObservers();
+        notifyObservers();
 			
 		
 		
@@ -349,8 +354,12 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	};
 
 	service.start = function () {
+        service.isOn = true;
 	    var positionSuccess = function(position){
-		    //Get the unique id object reference from Firebase
+		    
+            prevLoc = position;
+            
+            //Get the unique id object reference from Firebase
 		    sessionRef = fb.child("routes").child(service.routeData.currentRouteId).push({
 		    	created: Firebase.ServerValue.TIMESTAMP,
 		    	username: uS.authData.uid,
@@ -375,7 +384,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 			      // When the user disconnects from Firebase (e.g. closes the app, exits the browser),
 			      // remove their GeoFire entry
 			      fb.child("liveLocs").child(uS.authData.uid).onDisconnect().remove();
-			      
+			      helperService.hide();
 			      
 			  }).catch(function(error){
 			  	console.log(error);
@@ -386,13 +395,15 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	    	startWatching();
 
 	    };
-	    
+	    helperService.show("Cargando ubicación...");
 	    navigator.geolocation.getCurrentPosition(positionSuccess)
 
 
 	}
 	
 	service.stop = function () {
+        service.isOn = false;
+        service.tripDistance = 0;
 	    if (watchId) {
 	       $interval.cancel(watchId);
 	    }

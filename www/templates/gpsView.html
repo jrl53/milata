@@ -28,13 +28,13 @@
 
     <ion-footer-bar align-title="left" class="bar-dark" >
       <div class="buttons">
-        <button class="button" ng-click="routeModal.show()" ng-show="!isOn">Estoy en un bus</button>
+        <button class="button" ng-click="routeModal.show()" ng-show="!gls.isOn">Estoy en un bus</button>
       </div>
       <div class="buttons">
-        <button class="button" ng-click="submitModal.show()" ng-show="isOn"> Me baje del bus  </button>
+        <button class="button" ng-click="submitModal.show()" ng-show="gls.isOn"> Me baje del bus  </button>
       </div>
 
-      <div class="buttons" ng-click="addStop()" ng-show="isOn" >
+      <div class="buttons" ng-click="addStop()" ng-show="gls.isOn" >
         <button class="button">Add Stop</button>
       </div>    
     </ion-footer-bar>
