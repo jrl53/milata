@@ -1,3 +1,18 @@
+/*for slider in submitModal*/
+
+.slider {
+  height: 375px;
+}
+.slider-slide {
+  padding-top: 40px;
+  color: #000;
+  background-color: #fff;
+  text-align: center;
+
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-weight: 300;
+}
+
 /*for login tab icons*/
 
 .tab-item.tab-item-active, .tab-item.active, .tab-item.activated {

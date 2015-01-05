@@ -1,19 +1,33 @@
 <div class="modal">
         <header class="bar bar-header bar-royal">
-          <h1 class="title">Antes de irse</h1>
+          <h1 class="title">Resumen</h1>
           <div class="button button-clear" ng-click="submitModal.hide()"><span class="icon ion-close"></span></div>
         </header>
+    
         <ion-content class="has-header"  >
+            <ion-slide-box show-pager="true">
+              
+              <ion-slide>
+                  <h1>Ruta</h1>
+            <div class="list card">
      
+            <a class="item item-icon-left" href=""><i class="icon ion-map icon-milata"></i>Kilometros contribuidos<p>{{uS.userData.totalKm? uS.userData.totalKm : 0}}</p></a>
+            <a class="item item-icon-left" href=""><i class="icon ion-android-bus icon-milata"></i>Paradas reportadas<p>{{uS.userData.totalStops? uS.userData.totalStops : 0}}</p></a>
+  
+            
+        </div>
+              </ion-slide>
+             <ion-slide>
+                  <h1>Social</h1>
+                <div class="list card">
+     
+            <a class="item item-icon-left" href=""><i class="icon ion-thumbsup icon-milata"></i>Likes<p>{{uS.userData.likes? uS.userData.likes : 0}}</p></a>
+            
+        </div>
+              </ion-slide>
+            </ion-slide-box>
+            
           <div class="list">
-			  <label class="item item-input item-stacked-label">
-			    <span class="input-label">Su Nombre (opcional)</span>
-			    <input ng-model="message.name" type="text" placeholder="Agapito Rosales">
-			  </label>
-			  <label class="item item-input item-stacked-label">
-			    <span class="input-label">E-mail (opcional)</span>
-			    <input ng-model="message.email" type="text" placeholder="agapito.rosales@gmail.com">
-			  </label>
 			  <label class="item item-input item-stacked-label">
 			    <span class="input-label">Algun comentario para el equipo?</span>
 			    <input ng-model="message.comment" type="text" placeholder="Demasiado chiva.. pero...">
