@@ -315,6 +315,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 		
 		//update distance
 		service.tripDistance += helperService.calcDistance(prevLoc, newPosition);
+		prevLoc = newPosition;
 		
         var toPush = {
             lat:newPosition.coords.latitude, 
