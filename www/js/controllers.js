@@ -4,10 +4,26 @@
  */
 
 MapApp.controller('MarkerCtrl', ['$scope', function($scope) {
+	
 	$scope.num = 0;
 	$scope.add = function(){
 		$scope.num =+ 1;
+		console.log("this one works");
 	};
+	$scope.greet = function(args){
+				console.log("trying to alert!");
+				alert("Hola!.. " + args.markerName);
+			};
+	$scope.$on('leafletDirectiveMarker.click', function(e, args) {
+            // Args will contain the marker name and other relevant information
+            console.log("I'm also watching here!");
+			//$scope.greet = function(){
+			//	console.log("trying to alert!");
+			//	alert("Hola!.. " + args.markerName);
+			//};
+           
+        }); 
+	
 }]);
 
 MapApp.controller('MainCtrl', ['$scope', function($scope) {
@@ -148,10 +164,11 @@ MapApp.controller('LeftMenuCtrl', ['$scope', 'loginService', function($scope, lo
 /**
  * A google map / GPS controller.
  */
-MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocationService', 'displayPathService', 'leafletData', 
-	function($scope, $ionicModal, leafletData, geoLocationService, displayPathService, leafletData) {
+MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData', 'geoLocationService', 'displayPathService', 'leafletData', 'leafletEvents', 
+	function($scope, $ionicModal, $compile, leafletData, geoLocationService, displayPathService, leafletData, leafletEvents) {
 	
-    leafletData.getMap().then(function(map) {
+    
+		leafletData.getMap().then(function(map) {
        var lc = L.control.locate({
             position: 'topleft',  // set the location of the control
             drawCircle: true,  // controls whether a circle is drawn that shows the uncertainty about the location
@@ -215,6 +232,16 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocati
                     name: 'Mapbox',
                     url: 'http://api.tiles.mapbox.com/v4/jrl53.kk1j4m92/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoianJsNTMiLCJhIjoiTDFXaDdubyJ9.rTD1KwpSkwwrLjoBc1EImw',
                     type: 'xyz'
+            },
+			carto_light: {
+                    name: 'CartoDB-Light',
+                    url: 'http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+                    type: 'xyz'
+            },
+			carto_dark: {
+                    name: 'CartoDB-Dark',
+                    url: 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+                    type: 'xyz'
             }
              
     	}, 
@@ -233,9 +260,35 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocati
     	}
 
     };
-        
+		
+	$scope.events = {
+		map: {
+            enable: ['zoomstart', 'drag', 'click', 'mousemove', 'popupopen'],
+            logic: 'emit'
+        },
+        markers: {
+            enable: leafletEvents.getAvailableMarkerEvents()
+        }
+	};
     
-    displayPathService.searchPath("CB08");
+	$scope.$on('leafletDirectiveMarker.click', function(event, args){
+		console.log( args);
+		var markerName = args.leafletEvent.target.options.name; //has to be set above
+		$scope.clickedMarker = markerName;
+		var $tempContainer = $(args.leafletEvent.target._popup._container);
+		console.log("tempContainer: ", $tempContainer);
+		var $container = $(args.leafletEvent.target._popup._container).find('.leaflet-popup-content'); 
+		$container.empty();
+		var html = "<div>"+args.leafletEvent.target._popup._content + "</div>", 
+		  linkFunction = $compile(angular.element(html)),             
+		  linkedDOM = linkFunction($scope); 
+		$container.append(linkedDOM);
+	});
+		
+	$scope.doSomething = function(){
+		console.log("hi!", $scope.clickedMarker);
+	};
+    
     
     var updateMarkers = function(){
     	console.log("updating markers");
@@ -281,7 +334,6 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', 'leafletData', 'geoLocati
           $scope.submitModal.hide();
 	    }
 	  };
-
 
 
     $scope.addStop = function(){

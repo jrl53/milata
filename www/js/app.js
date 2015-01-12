@@ -276,9 +276,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
     //Set initial static markers
     service.markers = {
     	office:{
+			name: 'office!',
             lat: 9.965061,
             lng:  -84.120121,
-            message: "<div ng-include src=\"'templates/busMarkerTemplate.html'\"></div>",
+            message: "<div ng-include=\"'templates/busMarkerTemplate.html'\"></div>",
             focus: false,
             draggable: false,
             layer: 'stops',
@@ -288,6 +289,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
             }
 			
         }
+		
     };
 
 	
@@ -467,13 +469,13 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
                     {
                         lat: vehicle.l[0],
                         lng:  vehicle.l[1],
-                        message: vehicleId,
+                        message: "<div ng-include src=\"'templates/busMarkerTemplate.html'\"></div>",
                         focus: false,
                         draggable: false,
                         layer: 'buses',
                         icon: {
                             type: 'awesomeMarker',
-                            markerColor: 'red'
+                            markerColor: inColor
                         }
 						
                     };
@@ -533,10 +535,11 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 				  
 
 				  fb.child("liveLocsData").child(vehicleId).once("value", function(snap){ 
-                    addMarker(vehicle, vehicleId);
+                    addMarker(vehicle, vehicleId,snap.val().color);
                     helperService.apply(function(){
-                        service.markers[vehicleId].icon.markerColor = snap.val().color;
-                        service.markers[vehicleId].message = snap.val().name;
+                   //     service.markers[vehicleId].icon.markerColor = snap.val().color;
+                      //  service.markers[vehicleId].message = '<h2>'+ snap.val().name + '</h2>' + 
+					//		"<div ng-include src=\"'templates/busMarkerTemplate.html'\"></div>" ;
                        
                     });
 					// observerCallbacks[2]();

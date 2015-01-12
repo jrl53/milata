@@ -1,3 +1,20 @@
+/* for popups*/
+
+
+
+.leaflet-popup-content-wrapper {
+	
+	width: 300px;
+}
+
+.leaflet-popup-content-wrapper .leaflet-popup-content {
+	width: 260px;
+}
+
+.leaflet-popup-tip-container {
+	width: 300px;
+}
+
 /*for slider in submitModal*/
 
 .slider {
