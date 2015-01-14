@@ -272,7 +272,7 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData'
 	};
     
 	$scope.$on('leafletDirectiveMarker.click', function(event, args){
-		console.log( args);
+		console.log("gls.markers: ", $scope.gls.markers);
 		$scope.clickedName = $scope.gls.revPushDict[args.markerName];
 		$scope.clickedMarker = $scope.gls.liveLocsData[$scope.clickedName];
 		var $tempContainer = $(args.leafletEvent.target._popup._container);

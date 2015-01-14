@@ -202,9 +202,11 @@ MapApp.factory('helperService', function($ionicLoading, $window, $rootScope){
     
     s.apply = function(toUpdate){
         if($rootScope.$root.$$phase != '$apply' && $rootScope.$root.$$phase != '$digest'){
-              $rootScope.$apply(toUpdate);
+            console.log("Applying with apply", toUpdate)  ;
+			$rootScope.$apply(toUpdate);
            }
            else {
+			 console.log("Applying without apply", toUpdate);
              toUpdate();
           }
     };
@@ -320,6 +322,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	
 	service.liveLocsData = $firebase(fb.child("liveLocsData")).$asObject();
 	
+	service.pushDict = $firebase(fb.child("Helper").child("pushDict")).$asObject();
+	service.revPushDict = $firebase(fb.child("Helper").child("revPushDict")).$asObject();
+	
+	
 	var onChangeError = function (error) {
   		alert("Error: " + error);
 	};	
@@ -386,8 +392,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 		    });	
 			
 			//Add push key to the dictionary
-			service.pushDict = $firebase(fb.child("Helper").child("pushDict")).$asObject();
-			service.revPushDict = $firebase(fb.child("Helper").child("revPushDict")).$asObject();
+			
 			service.pushDict[sessionRef.key()] = helperService.remDash(sessionRef.key());
 			service.revPushDict[helperService.remDash(sessionRef.key())] = sessionRef.key();
 			service.pushDict.$save();
@@ -485,7 +490,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	  	function addMarker(vehicle, vehicleId, inColor, inName){
     		console.log("Adding Marker in factory side", vehicle.l[0])
 			helperService.apply(function(){
-                service.markers[service.pushDict[vehicleId]] = 
+                service.markers[helperService.remDash(vehicleId)] = 
                     {
 						name: inName,
                         lat: vehicle.l[0],
@@ -508,15 +513,15 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 		function updateMarker(location, vehicleId){
     		console.log("Updating Marker in factory side", location[0]);
             helperService.apply(function(){
-                service.markers[service.pushDict[vehicleId]].lat = location[0];
-                service.markers[service.pushDict[vehicleId]].lng = location[1];
+                service.markers[helperService.remDash(vehicleId)].lat = location[0];
+                service.markers[helperService.remDash(vehicleId)].lng = location[1];
             });
 		    //observerCallbacks[2]();
 		};
 
 		function deleteMarker(vehicleId){
             helperService.apply(function() {
-                delete service.markers[service.pushDict[vehicleId]];
+                delete service.markers[helperService.remDash(vehicleId)];
                 
             });
            // observerCallbacks[2]();
