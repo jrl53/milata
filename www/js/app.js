@@ -386,8 +386,12 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 		    });	
 			
 			//Add push key to the dictionary
+			service.pushDict = $firebase(fb.child("Helper").child("pushDict")).$asObject();
+			service.revPushDict = $firebase(fb.child("Helper").child("revPushDict")).$asObject();
 			service.pushDict[sessionRef.key()] = helperService.remDash(sessionRef.key());
 			service.revPushDict[helperService.remDash(sessionRef.key())] = sessionRef.key();
+			service.pushDict.$save();
+			service.revPushDict.$save();
 			
 		    //Set up bindings
 			var sync = $firebase(sessionRef.child("geometry"));
