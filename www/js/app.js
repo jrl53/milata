@@ -230,6 +230,11 @@ MapApp.factory('helperService', function($ionicLoading, $window, $rootScope){
             s.hide();
         }, 1999);
     };
+	
+	//remove "-" from the firebase push key
+	s.remDash = function(inString){
+		return inString.replace(/\W/g, '');
+	};
     
     return s;
 });
@@ -262,6 +267,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	var userStops = []; 
     
     var prevLoc = {};
+	service.pushDict = {};
+	service.revPushDict = {};
 	
 	service.tripDistance = 0;
 	service.latLngs = [];
@@ -272,6 +279,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	service.routeData = {};
 
     service.allRoutes = {};
+	service.liveLocsData = {};
+	
 
     //Set initial static markers
     service.markers = {
@@ -308,7 +317,9 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	//Retrieve all routs from FB***************************
 	service.allRoutes = $firebase(fb.child("allRoutes")).$asObject();
 	console.log(service.allRoutes);
-
+	
+	service.liveLocsData = $firebase(fb.child("liveLocsData")).$asObject();
+	
 	var onChangeError = function (error) {
   		alert("Error: " + error);
 	};	
@@ -331,7 +342,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
         };
         service.latLngs.$add(toPush);
 
-        geoFire.set(uS.authData.uid,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function()               {
+        geoFire.set(sessionRef.key(),[newPosition.coords.latitude, newPosition.coords.longitude]).then(function()               {
             console.log("Setting new position in geoFire");
 
           }).catch(function(error){
@@ -373,25 +384,30 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 		    	username: uS.authData.uid,
 		    	routeID: service.routeData.currentRouteId
 		    });	
-
+			
+			//Add push key to the dictionary
+			service.pushDict[sessionRef.key()] = helperService.remDash(sessionRef.key());
+			service.revPushDict[helperService.remDash(sessionRef.key())] = sessionRef.key();
+			
 		    //Set up bindings
 			var sync = $firebase(sessionRef.child("geometry"));
 			service.latLngs = sync.$asArray();
 			userStops = $firebase(sessionRef.child("stops")).$asArray();
-
-		    fb.child("liveLocsData").child(uS.authData.uid)
-                .update(service.allRoutes[service.routeData.currentRouteId]);
+			
+			var toSend = service.allRoutes[service.routeData.currentRouteId];
+			toSend.likes = 0;
+		    fb.child("liveLocsData").child(sessionRef.key()).update(toSend);
             
-            fb.child("liveLocsData").child(uS.authData.uid).onDisconnect().remove(function(err){
+            fb.child("liveLocsData").child(sessionRef.key()).onDisconnect().remove(function(err){
                 console.log("Trying to attach onDisconnect to liveLocs", err);
             });
             
 
-		    geoFire.set(uS.authData.uid,[position.coords.latitude, position.coords.longitude]).then(function(){
+		    geoFire.set(sessionRef.key(),[position.coords.latitude, position.coords.longitude]).then(function(){
 				console.log("Current user " + uS.authData.uid + "'s location has been added to GeoFire");
 			      // When the user disconnects from Firebase (e.g. closes the app, exits the browser),
 			      // remove their GeoFire entry
-			      fb.child("liveLocs").child(uS.authData.uid).onDisconnect().remove();
+			      fb.child("liveLocs").child(sessionRef.key()).onDisconnect().remove();
 			      helperService.hide();
 			      
 			  }).catch(function(error){
@@ -416,8 +432,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	       $interval.cancel(watchId);
 	    }
 
-	    fb.child("liveLocs").child(uS.authData.uid).remove();
-        fb.child("liveLocsData").child(uS.authData.uid).remove();
+	    fb.child("liveLocs").child(sessionRef.key()).remove();
+        fb.child("liveLocsData").child(sessionRef.key()).remove();
 		
 		//send to FB
 		message.totalDistKM = service.tripDistance;
@@ -462,11 +478,12 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	  /*************/
 	  /* Returns a random string of the inputted length */
 
-	  	function addMarker(vehicle, vehicleId, inColor){
+	  	function addMarker(vehicle, vehicleId, inColor, inName){
     		console.log("Adding Marker in factory side", vehicle.l[0])
 			helperService.apply(function(){
-                service.markers[vehicleId] = 
+                service.markers[service.pushDict[vehicleId]] = 
                     {
+						name: inName,
                         lat: vehicle.l[0],
                         lng:  vehicle.l[1],
                         message: "<div ng-include src=\"'templates/busMarkerTemplate.html'\"></div>",
@@ -481,20 +498,21 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
                     };
             });
 		    //observerCallbacks[2]();
+			
 		};
 
 		function updateMarker(location, vehicleId){
     		console.log("Updating Marker in factory side", location[0]);
             helperService.apply(function(){
-                service.markers[vehicleId].lat = location[0];
-                service.markers[vehicleId].lng = location[1];
+                service.markers[service.pushDict[vehicleId]].lat = location[0];
+                service.markers[service.pushDict[vehicleId]].lng = location[1];
             });
 		    //observerCallbacks[2]();
 		};
 
 		function deleteMarker(vehicleId){
             helperService.apply(function() {
-                delete service.markers[vehicleId];
+                delete service.markers[service.pushDict[vehicleId]];
                 
             });
            // observerCallbacks[2]();
@@ -535,14 +553,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 				  
 
 				  fb.child("liveLocsData").child(vehicleId).once("value", function(snap){ 
-                    addMarker(vehicle, vehicleId,snap.val().color);
-                    helperService.apply(function(){
-                   //     service.markers[vehicleId].icon.markerColor = snap.val().color;
-                      //  service.markers[vehicleId].message = '<h2>'+ snap.val().name + '</h2>' + 
-					//		"<div ng-include src=\"'templates/busMarkerTemplate.html'\"></div>" ;
-                       
-                    });
-					// observerCallbacks[2]();
+                    addMarker(vehicle, vehicleId,snap.val().color, snap.val().name);
+                   
 				  });
 
 			      }

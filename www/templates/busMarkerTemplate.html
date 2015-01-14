@@ -2,14 +2,14 @@
 
         <div class="list card">
             <div class="item">
-                <h2><b>Moravia</b></h2>
+                <h2><b>{{clickedMarker.name}}</b></h2>
             </div>
             <a class="item item-icon-left" href="">
                 <i class="icon ion-android-favorite icon-milata"></i>Hora inicio: </a>
-            <a class="item item-icon-left" href=""><i class="icon ion-thumbsup icon-milata"></i>Gracias: 34 </a>
+            <a class="item item-icon-left" href=""><i class="icon ion-thumbsup icon-milata"></i>Gracias: {{clickedMarker.likes}}</a>
 			
 			<div class="item tabs tabs-secondary tabs-icon-left">
-    <a class="tab-item" ng-click="addLike(message.time)">
+    <a class="tab-item" ng-click="addLike()">
       <i class="icon ion-thumbsup"></i>
       Gracias
     </a>	   

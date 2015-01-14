@@ -172,14 +172,14 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData'
        var lc = L.control.locate({
             position: 'topleft',  // set the location of the control
             drawCircle: true,  // controls whether a circle is drawn that shows the uncertainty about the location
+		    keepCurrentZoomLevel: true,
             follow: true,  // follow the user's location
             remainActive: false, // if true locate control remains active on click even if the user's location is in view.
             icon: 'icon ion-android-locate',  // class for icon, fa-location-arrow or fa-map-marker
             showPopup: false, // display a popup when the user click on the inner marker
             locateOptions: {enableHighAccuracy: true,
                 maximumAge: 60000,
-                timeout: 15000,
-                maxZoom: 15
+                timeout: 15000
             }  // define location options e.g enableHighAccuracy: true or maxZoom: 10
         }).addTo(map);
         
@@ -273,8 +273,8 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData'
     
 	$scope.$on('leafletDirectiveMarker.click', function(event, args){
 		console.log( args);
-		var markerName = args.leafletEvent.target.options.name; //has to be set above
-		$scope.clickedMarker = markerName;
+		$scope.clickedName = $scope.gls.revPushDict[args.markerName];
+		$scope.clickedMarker = $scope.gls.liveLocsData[$scope.clickedName];
 		var $tempContainer = $(args.leafletEvent.target._popup._container);
 		console.log("tempContainer: ", $tempContainer);
 		var $container = $(args.leafletEvent.target._popup._container).find('.leaflet-popup-content'); 
@@ -285,8 +285,11 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData'
 		$container.append(linkedDOM);
 	});
 		
-	$scope.doSomething = function(){
+	$scope.addLike = function(){
 		console.log("hi!", $scope.clickedMarker);
+		$scope.clickedMarker.likes++;
+		$scope.gls.liveLocsData.$save();
+	
 	};
     
     
