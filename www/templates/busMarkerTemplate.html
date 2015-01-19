@@ -9,7 +9,7 @@
             <a class="item item-icon-left" href=""><i class="icon ion-thumbsup icon-milata"></i>Gracias: {{clickedMarker.likes}}</a>
 			
 			<div class="item tabs tabs-secondary tabs-icon-left">
-    <a class="tab-item" ng-click="addLike()">
+    <a class="tab-item" ng-click="addLike()" ng-disabled="clickedMarker.liked[uS.authData.uid]">
       <i class="icon ion-thumbsup"></i>
       Gracias
     </a>	   

@@ -12,7 +12,7 @@
                 <i class="icon ion-android-favorite icon-milata"></i>Ruta preferida<p>{{uS.userData.prefRoute? uS.userData.prefRoute : "-"}}</p><i class="icon ion-chevron-right icon-accessory"></i>
             </a>
             <a class="item item-icon-left" href=""><i class="icon ion-podium icon-milata"></i>Puntaje<p>{{uS.userData.points? uS.userData.points : 0 }}</p></a>
-            <a class="item item-icon-left" href=""><i class="icon ion-map icon-milata"></i>Kilometros contribuidos<p>{{uS.userData.totalKm? uS.userData.totalKm : 0}}</p></a>
+            <a class="item item-icon-left" href=""><i class="icon ion-map icon-milata"></i>Kilometros contribuidos<p>{{(uS.userData.totalKm? uS.userData.totalKm : 0) | number:2}}</p></a>
             <a class="item item-icon-left" href=""><i class="icon ion-android-bus icon-milata"></i>Paradas reportadas<p>{{uS.userData.totalStops? uS.userData.totalStops : 0}}</p></a>
             <a class="item item-icon-left" href=""><i class="icon ion-thumbsup icon-milata"></i>Likes<p>{{uS.userData.likes? uS.userData.likes : 0}}</p></a>
             

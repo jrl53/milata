@@ -152,11 +152,12 @@ MapApp.controller('SignUpCtrl', [
     }
 ]);
 
-MapApp.controller('LeftMenuCtrl', ['$scope', 'loginService', function($scope, loginService) {
+MapApp.controller('LeftMenuCtrl', ['$scope', 'loginService', 'geoLocationService', function($scope, loginService, geoLocationService) {
     //$scope.authData = $rootScope.authData;
     $scope.uSession = loginService;
     console.log("in LeftMenuCtrl... authData: ", $scope.uSession.authData);
     $scope.logout = function(){
+		if(geoLocationService.isOn) geoLocationService.stop({byLogout: true	});
         loginService.logout();
     };
 }]);
@@ -164,8 +165,8 @@ MapApp.controller('LeftMenuCtrl', ['$scope', 'loginService', function($scope, lo
 /**
  * A google map / GPS controller.
  */
-MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData', 'geoLocationService', 'displayPathService', 'leafletData', 'leafletEvents', 
-	function($scope, $ionicModal, $compile, leafletData, geoLocationService, displayPathService, leafletData, leafletEvents) {
+MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData', 'geoLocationService', 'displayPathService', 'leafletData', 'leafletEvents', 'loginService', 
+	function($scope, $ionicModal, $compile, leafletData, geoLocationService, displayPathService, leafletData, leafletEvents, loginService) {
 	
     
 		leafletData.getMap().then(function(map) {
@@ -187,7 +188,8 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData'
     });
         
     $scope.gls = geoLocationService;
-    
+    $scope.uS = loginService;
+		
     $scope.allRoutes = geoLocationService.allRoutes;
     $scope.routeData = geoLocationService.routeData;   
 	$scope.markers = geoLocationService.markers;
@@ -273,8 +275,8 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData'
     
 	$scope.$on('leafletDirectiveMarker.click', function(event, args){
 		console.log("gls.markers: ", $scope.gls.markers);
-		$scope.clickedName = $scope.gls.revPushDict[args.markerName];
-		$scope.clickedMarker = $scope.gls.liveLocsData[$scope.clickedName];
+		console.log("clicked arg: ", args);
+		$scope.clickedMarker = $scope.gls.liveLocsData[args.markerName];
 		var $tempContainer = $(args.leafletEvent.target._popup._container);
 		console.log("tempContainer: ", $tempContainer);
 		var $container = $(args.leafletEvent.target._popup._container).find('.leaflet-popup-content'); 
@@ -288,7 +290,10 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData'
 	$scope.addLike = function(){
 		console.log("hi!", $scope.clickedMarker);
 		$scope.clickedMarker.likes++;
+		$scope.clickedMarker.liked[$scope.uS.authData.uid] = true;
 		$scope.gls.liveLocsData.$save();
+		
+		
 	
 	};
     

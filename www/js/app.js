@@ -142,7 +142,7 @@ MapApp.factory('loginService', function($state, $firebaseAuth, $firebase, helper
     s.logout = function() {
         console.log("logging out...");
         s.auth.$unauth();
-
+		
         s.authData = {};
         //$rootScope.authData = {};
     };
@@ -237,6 +237,16 @@ MapApp.factory('helperService', function($ionicLoading, $window, $rootScope){
 	s.remDash = function(inString){
 		return inString.replace(/\W/g, '');
 	};
+	
+	s.randString = function(){
+		var text = "";
+		var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+		for( var i=0; i < 5; i++ )
+			text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+		return text;	
+	};
     
     return s;
 });
@@ -269,9 +279,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	var userStops = []; 
     
     var prevLoc = {};
-	service.pushDict = {};
-	service.revPushDict = {};
-	
+
+	service.randName = '';
 	service.tripDistance = 0;
 	service.latLngs = [];
 	service.currentPosition = {};
@@ -302,6 +311,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
         }
 		
     };
+    
 
 	
 	//Notification system*********************************
@@ -322,8 +332,8 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	
 	service.liveLocsData = $firebase(fb.child("liveLocsData")).$asObject();
 	
-	service.pushDict = $firebase(fb.child("Helper").child("pushDict")).$asObject();
-	service.revPushDict = $firebase(fb.child("Helper").child("revPushDict")).$asObject();
+	//service.pushDict = $firebase(fb.child("Helper").child("pushDict")).$asObject();
+	//service.revPushDict = $firebase(fb.child("Helper").child("revPushDict")).$asObject();
 	
 	
 	var onChangeError = function (error) {
@@ -348,7 +358,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
         };
         service.latLngs.$add(toPush);
 
-        geoFire.set(sessionRef.key(),[newPosition.coords.latitude, newPosition.coords.longitude]).then(function()               {
+        geoFire.set(service.randName,[newPosition.coords.latitude, newPosition.coords.longitude]).then(function()               {
             console.log("Setting new position in geoFire");
 
           }).catch(function(error){
@@ -383,6 +393,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	    var positionSuccess = function(position){
 		    
             prevLoc = position;
+			service.randName = helperService.randString();
             
             //Get the unique id object reference from Firebase
 		    sessionRef = fb.child("routes").child(service.routeData.currentRouteId).push({
@@ -393,10 +404,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 			
 			//Add push key to the dictionary
 			
-			service.pushDict[sessionRef.key()] = helperService.remDash(sessionRef.key());
-			service.revPushDict[helperService.remDash(sessionRef.key())] = sessionRef.key();
-			service.pushDict.$save();
-			service.revPushDict.$save();
+		//	service.pushDict[sessionRef.key()] = helperService.remDash(sessionRef.key());
+		//	service.revPushDict[helperService.remDash(sessionRef.key())] = sessionRef.key();
+		//	service.pushDict.$save();
+		//	service.revPushDict.$save();
 			
 		    //Set up bindings
 			var sync = $firebase(sessionRef.child("geometry"));
@@ -405,18 +416,20 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 			
 			var toSend = service.allRoutes[service.routeData.currentRouteId];
 			toSend.likes = 0;
-		    fb.child("liveLocsData").child(sessionRef.key()).update(toSend);
+			toSend.liked = {dummy: true};
+			toSend.pushKey = sessionRef.key();
+		    fb.child("liveLocsData").child(service.randName).update(toSend);
             
-            fb.child("liveLocsData").child(sessionRef.key()).onDisconnect().remove(function(err){
+            fb.child("liveLocsData").child(service.randName).onDisconnect().remove(function(err){
                 console.log("Trying to attach onDisconnect to liveLocs", err);
             });
             
 
-		    geoFire.set(sessionRef.key(),[position.coords.latitude, position.coords.longitude]).then(function(){
+		    geoFire.set(service.randName,[position.coords.latitude, position.coords.longitude]).then(function(){
 				console.log("Current user " + uS.authData.uid + "'s location has been added to GeoFire");
 			      // When the user disconnects from Firebase (e.g. closes the app, exits the browser),
 			      // remove their GeoFire entry
-			      fb.child("liveLocs").child(sessionRef.key()).onDisconnect().remove();
+			      fb.child("liveLocs").child(service.randName).onDisconnect().remove();
 			      helperService.hide();
 			      
 			  }).catch(function(error){
@@ -435,17 +448,10 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	}
 	
 	service.stop = function (message) {
-        service.isOn = false;
-        service.tripDistance = 0;
-	    if (watchId) {
-	       $interval.cancel(watchId);
-	    }
-
-	    fb.child("liveLocs").child(sessionRef.key()).remove();
-        fb.child("liveLocsData").child(sessionRef.key()).remove();
-		
-		//send to FB
+        
+		//send to routes FB
 		message.totalDistKM = service.tripDistance;
+		message.likes = service.liveLocsData[service.randName].likes;
 		sessionRef.update(message,				
 			function(error){
 					if (error) {
@@ -459,6 +465,26 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 					}
 			}
 		);
+		
+		//send to username FB
+		
+		if(uS.userData.likes) uS.userData.likes += service.liveLocsData[service.randName].likes;
+		else uS.userData['likes'] = service.liveLocsData[service.randName].likes;
+		
+		if(uS.userData.totalKm) uS.userData.totalKm += service.tripDistance;
+		else uS.userData.totalKm = service.tripDistance;
+		
+		uS.userData.$save();
+		
+		//Finish
+		service.isOn = false;
+        service.tripDistance = 0;
+	    if (watchId) {
+	       $interval.cancel(watchId);
+	    }
+
+		fb.child("liveLocs").child(service.randName).remove();
+        fb.child("liveLocsData").child(service.randName).remove();
         
 	}
 	
@@ -490,7 +516,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 	  	function addMarker(vehicle, vehicleId, inColor, inName){
     		console.log("Adding Marker in factory side", vehicle.l[0])
 			helperService.apply(function(){
-                service.markers[helperService.remDash(vehicleId)] = 
+                service.markers[vehicleId] = 
                     {
 						name: inName,
                         lat: vehicle.l[0],
@@ -513,15 +539,15 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 		function updateMarker(location, vehicleId){
     		console.log("Updating Marker in factory side", location[0]);
             helperService.apply(function(){
-                service.markers[helperService.remDash(vehicleId)].lat = location[0];
-                service.markers[helperService.remDash(vehicleId)].lng = location[1];
+                service.markers[vehicleId].lat = location[0];
+                service.markers[vehicleId].lng = location[1];
             });
 		    //observerCallbacks[2]();
 		};
 
 		function deleteMarker(vehicleId){
             helperService.apply(function() {
-                delete service.markers[helperService.remDash(vehicleId)];
+                delete service.markers[vehicleId];
                 
             });
            // observerCallbacks[2]();
@@ -558,11 +584,11 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
 			      // Add the vehicle to the list of vehicles in the query
 			      vehiclesInQuery[vehicleId] = vehicle;
 					// Create a new marker for the vehicle
-			      
-				  
+			 
 
 				  fb.child("liveLocsData").child(vehicleId).once("value", function(snap){ 
-                    addMarker(vehicle, vehicleId,snap.val().color, snap.val().name);
+                    addMarker(vehicle, vehicleId,snap.val().color, 
+							  snap.val().name);
                    
 				  });
 
