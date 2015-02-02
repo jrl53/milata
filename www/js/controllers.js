@@ -1,75 +1,56 @@
 /**
  * MAIN CONTROLLER - handle inapp browser
  */
-MapApp.controller('MarkerCtrl', ['$scope', function ($scope) {
 
-    $scope.num = 0;
-    $scope.add = function () {
-        $scope.num = +1;
-        console.log("this one works");
-    };
-    $scope.greet = function (args) {
-        console.log("trying to alert!");
-        alert("Hola!.. " + args.markerName);
-    };
-    $scope.$on('leafletDirectiveMarker.click', function (e, args) {
-        // Args will contain the marker name and other relevant information
-        console.log("I'm also watching here!");
-        //$scope.greet = function(){
-        //	console.log("trying to alert!");
-        //	alert("Hola!.. " + args.markerName);
-        //};
-
-    });
-
-}]);
 
 MapApp.controller('SettingsCtrl', ['$scope', '$ionicModal', 'geoLocationService', 'loginService', 'helperService', 'fbURL', function ($scope, $ionicModal, geoLocationService, loginService, helperService, fbURL) {
     var fb = new Firebase(fbURL);
-	$scope.user = {
-		oldPass : '',
-		newPass : ''
-	}
-	$scope.uS = loginService;
-	
-	$scope.logout = function () {
+    $scope.user = {
+        oldPass: '',
+        newPass: ''
+    }
+    $scope.uS = loginService;
+
+    $scope.logout = function () {
         if (geoLocationService.isOn) geoLocationService.stop({
             byLogout: true
         });
         loginService.logout();
     };
-	
-	$scope.changePassword = function(){
-	
-		console.log("From changePassword() in settingsController: ", loginService.authData.password.email);
-		
-		fb.changePassword({
-			  email       : $scope.uS.authData.password.email,
-			  oldPassword : $scope.user.oldPass,
-			  newPassword : $scope.user.newPass
-			}, function(error) {
-			  if (error === null) {
-				console.log("Password changed successfully");
-				  helperService.notify('Contraseña cambiada satisfactoriamente');
-				  setTimeout(function(){$scope.passChangeModal.hide();}, 3000);
-			  } else {
-				console.log("Error changing password:", error);
-				  if(error.code == 'INVALID_PASSWORD')
-					  helperService.notify('Contraseña inválida. Intente de nuevo');
-			  }
-			});
-		
-	}
-	
-	$ionicModal.fromTemplateUrl('templates/passChangeModal.html', function ($ionicModal) {
-            $scope.passChangeModal = $ionicModal;
-        }, {
-            // Use our scope for the scope of the modal to keep it simple
-            scope: $scope,
-            // The animation we want to use for the modal entrance
-            animation: 'slide-in-up'
+
+    $scope.changePassword = function () {
+
+        console.log("From changePassword() in settingsController: ", loginService.authData.password.email);
+
+        fb.changePassword({
+            email: $scope.uS.authData.password.email,
+            oldPassword: $scope.user.oldPass,
+            newPassword: $scope.user.newPass
+        }, function (error) {
+            if (error === null) {
+                console.log("Password changed successfully");
+                helperService.notify('Contraseña cambiada satisfactoriamente');
+                setTimeout(function () {
+                    $scope.passChangeModal.hide();
+                }, 3000);
+            } else {
+                console.log("Error changing password:", error);
+                if (error.code == 'INVALID_PASSWORD')
+                    helperService.notify('Contraseña inválida. Intente de nuevo');
+            }
         });
-	
+
+    }
+
+    $ionicModal.fromTemplateUrl('templates/passChangeModal.html', function ($ionicModal) {
+        $scope.passChangeModal = $ionicModal;
+    }, {
+        // Use our scope for the scope of the modal to keep it simple
+        scope: $scope,
+        // The animation we want to use for the modal entrance
+        animation: 'slide-in-up'
+    });
+
 }]);
 
 MapApp.controller('MainCtrl', ['$scope', function ($scope) {
@@ -155,27 +136,26 @@ MapApp.controller('SignInCtrl', ['$scope', '$cordovaOauth', '$ionicModal', 'logi
             helperService.hide();
         });
     };
-	
-	$scope.resetPassword = function() {
-		fb.resetPassword({
-			email: $scope.user.email
-			}, 
-			function(error){
-				if(error === null) {
-					console.log("Password reset email sent successfully");
-					helperService.notify('Nueva contraseña enviada satisfactoriamente');
-					$scope.resetModal.hide();
-			}
-				else {
-					console.log("Error sending reset email!", error);
-					if(error.code == 'INVALID_USER') {
-						helperService.notify('Esta dirección no está en nuestros sistemas. Por favor registrese');
-					}
-				}
-			});
-		
-	};
-	
+
+    $scope.resetPassword = function () {
+        fb.resetPassword({
+                email: $scope.user.email
+            },
+            function (error) {
+                if (error === null) {
+                    console.log("Password reset email sent successfully");
+                    helperService.notify('Nueva contraseña enviada satisfactoriamente');
+                    $scope.resetModal.hide();
+                } else {
+                    console.log("Error sending reset email!", error);
+                    if (error.code == 'INVALID_USER') {
+                        helperService.notify('Esta dirección no está en nuestros sistemas. Por favor registrese');
+                    }
+                }
+            });
+
+    };
+
 
     $ionicModal.fromTemplateUrl('templates/passResetModal.html', function ($ionicModal) {
         $scope.resetModal = $ionicModal;
@@ -237,7 +217,7 @@ MapApp.controller('LeftMenuCtrl', ['$scope', 'loginService', 'geoLocationService
     //$scope.authData = $rootScope.authData;
     $scope.uSession = loginService;
     console.log("in LeftMenuCtrl... authData: ", $scope.uSession.authData);
-    
+
 }]);
 
 /**

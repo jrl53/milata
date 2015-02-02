@@ -335,7 +335,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
             name: 'office!',
             lat: 9.965061,
             lng: -84.120121,
-            message: "<div ng-include=\"'templates/busMarkerTemplate.html'\"></div>",
+            message: "Ultrapark II",
             focus: false,
             draggable: false,
             layer: 'stops',
@@ -362,7 +362,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
         });
     };
 
-    //Retrieve all routs from FB***************************
+    //Retrieve all routes from FB***************************
     service.allRoutes = $firebase(fb.child("allRoutes")).$asObject();
     console.log(service.allRoutes);
 
@@ -438,13 +438,6 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
                 routeID: service.routeData.currentRouteId
             });
 
-            //Add push key to the dictionary
-
-            //	service.pushDict[sessionRef.key()] = helperService.remDash(sessionRef.key());
-            //	service.revPushDict[helperService.remDash(sessionRef.key())] = sessionRef.key();
-            //	service.pushDict.$save();
-            //	service.revPushDict.$save();
-
             //Set up bindings
             var sync = $firebase(sessionRef.child("geometry"));
             service.latLngs = sync.$asArray();
@@ -456,6 +449,7 @@ MapApp.factory('geoLocationService', function ($ionicPopup, $firebase, $interval
                 dummy: true
             };
             toSend.pushKey = sessionRef.key();
+			toSend.created = Firebase.ServerValue.TIMESTAMP;
             fb.child("liveLocsData").child(service.randName).update(toSend);
 
             fb.child("liveLocsData").child(service.randName).onDisconnect().remove(function (err) {

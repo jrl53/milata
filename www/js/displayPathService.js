@@ -69,7 +69,7 @@ MapApp.factory('displayPathService', function ($firebase, $rootScope, fbURL, hel
 		console.log(s.paths);
 	};
   //  s.searchAllUserRoutes();
-	s.searchPath("CB08");
+	//s.searchPath("CB08");
 //	s.searchPath("CB08");
 	
 	function loadJSON(callback) {   

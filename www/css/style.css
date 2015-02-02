@@ -1,18 +1,16 @@
 /* for popups*/
 
-
-
 .leaflet-popup-content-wrapper {
 	
-	width: 300px;
+	width: 230px;
 }
 
 .leaflet-popup-content-wrapper .leaflet-popup-content {
-	width: 260px;
+	width: 190px;
 }
 
 .leaflet-popup-tip-container {
-	width: 300px;
+	width: 190px;
 }
 
 /*for slider in submitModal*/
