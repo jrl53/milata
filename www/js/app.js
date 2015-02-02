@@ -4,7 +4,7 @@ var MapApp = angular.module('MapApp', [
 ]);
 
 MapApp.constant('fbURL', "https://boiling-inferno-6943.firebaseio.com");
-MapApp.constant('version', "0.0.3");
+MapApp.constant('version', "0.0.5");
 
 
 MapApp.run(function ($ionicPlatform, $ionicPopup, $ionicModal, $state, $firebaseAuth, $firebase, $ionicLoading,
