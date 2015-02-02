@@ -366,7 +366,7 @@ MapApp.controller('GpsCtrl', ['$scope', '$ionicModal', '$compile', 'leafletData'
 
         var updateLine = function () {
             console.log("updating line");
-            $scope.paths.p1.latlngs = geoLocationService.latLngs;
+            $scope.dps.paths.userPath.latlngs = geoLocationService.latLngs;
         };
 
 
