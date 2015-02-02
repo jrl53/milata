@@ -1,4 +1,4 @@
-![Alt text](http://www.milatacr.com/wwws/img/Hi-res-icon-MiLata_small.png)
+![Alt text](http://www.milatacr.com/www/img/Hi-res-icon-MiLata_small.png)
 
 # Qué es MiLata?
 
