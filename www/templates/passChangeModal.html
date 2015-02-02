@@ -1,0 +1,30 @@
+<div class="modal">
+<ion-header-bar class="bar-energized">
+	<div class="button button-clear" ng-click="passChangeModal.hide()" ><span class="icon ion-ios-close-empty"></span></div>
+    <h1 class="title">Cambiar contraseña</h1>
+</ion-header-bar>
+
+<ion-content class="has-header">
+    <div class="list">
+        <form name="passChangeFrm">
+            <label class="item item-input">
+                <span class="input-label">Contraseña actual</span>
+                <input type="password" ng-model="user.oldPass">
+            </label>
+			<label class="item item-input">
+                <span class="input-label">Contraseña nueva</span>
+                <input type="password" ng-model="user.newPass">
+            </label>
+			
+            <label>
+                <button class="btn-auth btn-github large" ng-disabled="passChangeFrm.$invalid || !user.oldPass || !user.newPass" ng-click="changePassword()" >Cambiar</b>
+                </button>
+            </label>
+       
+        </form>
+    </div>
+
+
+</ion-content>
+
+</div>
